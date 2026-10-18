@@ -1,18 +1,17 @@
 {
   "ai": {
-    "provider": "deepseek",
+    "provider": "openai",
     "provider_chain": null,
-    "model": "deepseek-v4-flash",
-    "base_url": "https://api.deepseek.com",
-    "api_key_env": "DEEPSEEK_API_KEY",
+    "model": "cn:deepseek-v4.1-flash",
+    "base_url": "https://api.0721net.cc.cd/v1",
+    "api_key_env": "OPENAI_API_KEY",
     "temperature": 0.3,
     "max_tokens": 8192,
-    "throttle_sec": 1.0,
+    "throttle_sec": 0.0,
     "analysis_concurrency": 5,
-    "enrichment_concurrency": 5,
+    "enrichment_concurrency": 3,
     "languages": [
-      "zh",
-      "en"
+      "zh"
     ],
     "azure_endpoint_env": null,
     "api_version": null
