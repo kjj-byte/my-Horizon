@@ -958,7 +958,7 @@
     "languages": [
       "zh"
     ],
-    "enabled": true
+    "enabled": false
   },
   "wechat": null
 }
