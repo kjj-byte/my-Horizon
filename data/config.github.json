@@ -1,23 +1,910 @@
 {
   "ai": {
     "provider": "deepseek",
+    "provider_chain": null,
     "model": "deepseek-v4-flash",
     "base_url": "https://api.deepseek.com",
     "api_key_env": "DEEPSEEK_API_KEY",
     "temperature": 0.3,
     "max_tokens": 8192,
-    "throttle_sec": 1,
+    "throttle_sec": 1.0,
+    "analysis_concurrency": 5,
+    "enrichment_concurrency": 5,
     "languages": [
       "zh",
       "en"
     ],
-    "analysis_concurrency": 5,
-    "enrichment_concurrency": 5
+    "azure_endpoint_env": null,
+    "api_version": null
+  },
+  "sources": {
+    "github": [
+      {
+        "type": "user_events",
+        "username": "karpathy",
+        "owner": null,
+        "repo": null,
+        "enabled": true,
+        "category": null,
+        "profile": "tech-news"
+      },
+      {
+        "type": "repo_releases",
+        "username": null,
+        "owner": "vllm-project",
+        "repo": "vllm",
+        "enabled": true,
+        "category": null,
+        "profile": "tech-news"
+      },
+      {
+        "type": "repo_releases",
+        "username": null,
+        "owner": "sgl-project",
+        "repo": "sglang",
+        "enabled": true,
+        "category": null,
+        "profile": "tech-news"
+      },
+      {
+        "type": "repo_releases",
+        "username": null,
+        "owner": "triton-lang",
+        "repo": "triton",
+        "enabled": true,
+        "category": null,
+        "profile": "tech-news"
+      },
+      {
+        "type": "repo_releases",
+        "username": null,
+        "owner": "YD4223",
+        "repo": "https://github.com/YD4223/aihub",
+        "enabled": true,
+        "category": null,
+        "profile": null
+      },
+      {
+        "type": "user_events",
+        "username": "torvalds",
+        "owner": null,
+        "repo": null,
+        "enabled": true,
+        "category": null,
+        "profile": null
+      },
+      {
+        "type": "repo_releases",
+        "username": null,
+        "owner": "rapidly-tech",
+        "repo": "rapidly",
+        "enabled": true,
+        "category": null,
+        "profile": null
+      },
+      {
+        "type": "repo_releases",
+        "username": null,
+        "owner": "ziglang",
+        "repo": "zig",
+        "enabled": true,
+        "category": null,
+        "profile": null
+      },
+      {
+        "type": "repo_releases",
+        "username": null,
+        "owner": "rust-lang",
+        "repo": "rust",
+        "enabled": true,
+        "category": null,
+        "profile": null
+      },
+      {
+        "type": "repo_releases",
+        "username": null,
+        "owner": "neovim",
+        "repo": "neovim",
+        "enabled": true,
+        "category": null,
+        "profile": null
+      }
+    ],
+    "hackernews": {
+      "enabled": true,
+      "fetch_top_stories": 30,
+      "min_score": 150,
+      "category": null,
+      "profile": "tech-news"
+    },
+    "rss": [
+      {
+        "name": "Google News: 华为云与开发者活动",
+        "url": "https://news.google.com/rss/search?q=%E5%8D%8E%E4%B8%BA%E4%BA%91+(%E4%BB%A3%E9%87%91%E5%88%B8+OR+%E6%97%A0%E9%97%A8%E6%A7%9B+OR+%E5%BC%80%E5%8F%91%E8%80%85%E5%A4%A7%E8%B5%9B+OR+CodeArts+OR+Flexus+OR+%E5%AD%A6%E7%94%9F%E4%BC%98%E6%83%A0)&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Google News: 云资源券与免费VPS",
+        "url": "https://news.google.com/rss/search?q=(%22Google+Cloud%22+OR+%22%E5%85%8D%E8%B4%B9VPS%22+OR+%22%E5%85%8D%E8%B4%B9ECS%22)+AND+(%22%E4%BB%A3%E9%87%91%E5%88%B8%22+OR+%22%E6%97%A0%E9%97%A8%E6%A7%9B%22+OR+%22%E6%B3%A8%E5%86%8C%E8%B5%A0%E9%87%91%22+OR+%22%E5%BC%80%E5%8F%91%E8%80%85%E4%BB%BB%E5%8A%A1%E5%A5%96%E5%8A%B1%22+OR+%22credit%22)&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "V2EX 云计算",
+        "url": "https://www.v2ex.com/feed/cloud.xml",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "V2EX 优惠信息",
+        "url": "https://www.v2ex.com/feed/promotions.xml",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Google Cloud Blog",
+        "url": "https://cloudblog.withgoogle.com/rss/",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": "trafilatura",
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Simon Willison",
+        "url": "https://simonwillison.net/atom/everything/",
+        "enabled": true,
+        "category": "ai-tools",
+        "content_extractor": null,
+        "profile": "tech-news"
+      },
+      {
+        "name": "vLLM Blog",
+        "url": "https://vllm.ai/blog/rss.xml",
+        "enabled": true,
+        "category": "llm-inference",
+        "content_extractor": "trafilatura",
+        "profile": "tech-blog"
+      },
+      {
+        "name": "Sean Goedecke",
+        "url": "https://www.seangoedecke.com/rss.xml",
+        "enabled": true,
+        "category": "software-engineering",
+        "content_extractor": "trafilatura",
+        "profile": "tech-blog"
+      },
+      {
+        "name": "CNBC Finance",
+        "url": "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664",
+        "enabled": true,
+        "category": "finance",
+        "content_extractor": "trafilatura",
+        "profile": "finance-news"
+      },
+      {
+        "name": "GitHub Trending - Daily",
+        "url": "https://mshibanami.github.io/GitHubTrendingRSS/daily/all.xml",
+        "enabled": true,
+        "category": "github-trending",
+        "content_extractor": null,
+        "profile": "tech-news"
+      },
+      {
+        "name": "Semianalysis",
+        "url": "https://newsletter.semianalysis.com/feed",
+        "enabled": true,
+        "category": "semiconductors",
+        "content_extractor": null,
+        "profile": "tech-news"
+      },
+      {
+        "name": "LWN.net",
+        "url": "https://lwn.net/headlines/full_text?key=${LWN_KEY}",
+        "enabled": true,
+        "category": "linux-kernel",
+        "content_extractor": null,
+        "profile": "tech-news"
+      },
+      {
+        "name": "V2EX",
+        "url": "https://v2ex.com/index.xml",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Google Research Blog",
+        "url": "https://blog.research.google/atom.xml",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "MIT News - AI",
+        "url": "https://news.mit.edu/topic/mitartificial-intelligence2-rss.xml",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "ruanyifeng",
+        "url": "https://www.ruanyifeng.com/blog/atom.xml",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Microsoft Research",
+        "url": "https://www.microsoft.com/en-us/research/feed/",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Anthropic Research",
+        "url": "https://www.anthropic.com/research/rss",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "量子位",
+        "url": "https://wechat2rss.xlab.app/feed/7131b577c61365cb47e81000738c10d872685908.xml",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "新智元",
+        "url": "https://wechat2rss.xlab.app/feed/ede30346413ea70dbef5d485ea5cbb95cca446e7.xml",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "BAIR Blog",
+        "url": "https://bair.berkeley.edu/blog/feed.xml",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Latent Space",
+        "url": "https://www.latent.space/feed",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Chip Huyen",
+        "url": "https://huyenchip.com/feed.xml",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Jay Alammar",
+        "url": "https://jalammar.github.io/feed.xml",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Ahead of AI (Sebastian Raschka)",
+        "url": "https://magazine.sebastianraschka.com/feed",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Interconnects",
+        "url": "https://www.interconnects.ai/feed",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Machine Learning Mastery",
+        "url": "https://machinelearningmastery.com/feed/",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "OpenAI Blog",
+        "url": "https://openai.com/blog/rss.xml",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Sebastian Raschka",
+        "url": "https://sebastianraschka.com/rss_feed.xml",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "The Batch",
+        "url": "https://www.deeplearning.ai/the-batch/feed/",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "The Gradient",
+        "url": "https://thegradient.pub/rss/",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Stanford AI Lab (SAIL) Blog",
+        "url": "https://ai.stanford.edu/blog/feed.xml",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Ars Technica AI",
+        "url": "http://feeds.arstechnica.com/arstechnica/artificial-intelligence",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "AI Weekly",
+        "url": "https://aiweekly.co/issues.rss",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "LWN.net",
+        "url": "https://lwn.net/headlines/rss",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Brendan Gregg",
+        "url": "https://www.brendangregg.com/blog/rss.xml",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "The Economist",
+        "url": "https://www.economist.com/latest/rss.xml",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Last Week in AI",
+        "url": "https://lastweekin.ai/feed",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Lilian Weng",
+        "url": "https://lilianweng.github.io/index.xml",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Lobsters",
+        "url": "https://lobste.rs/rss",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "The Pragmatic Engineer",
+        "url": "https://newsletter.pragmaticengineer.com/feed",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "AINews (Buttondown)",
+        "url": "https://buttondown.com/ainews/rss",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "BBC Learning English",
+        "url": "http://www.bbc.co.uk/learningenglish/english/features/6-minute-english/rss",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Anavem.com",
+        "url": "https://www.anavem.com/en/rss.xml",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Schneier on Security",
+        "url": "https://www.schneier.com/feed/atom/",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Krebs on Security",
+        "url": "https://krebsonsecurity.com/feed/",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "navanem.com",
+        "url": "https://www.navanem.com/feeds/news.xml",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "CSS-Tricks",
+        "url": "https://css-tricks.com/feed/",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "IT HOME",
+        "url": "https://www.ithome.com/rss/",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "AWS Machine Learning Blog",
+        "url": "https://aws.amazon.com/blogs/machine-learning/feed/",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Google Blog",
+        "url": "https://blog.google/feed/",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Microsoft AI Blog",
+        "url": "https://blogs.microsoft.com/ai/feed/",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "NVIDIA Developer Blog",
+        "url": "https://developer.nvidia.com/blog/feed",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "情報の灯台 / Joho no Todai",
+        "url": "https://joho-todai.com/pinterest-rss/",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Hugging Face Blog",
+        "url": "https://huggingface.co/blog/feed.xml",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "OpenAI News",
+        "url": "https://openai.com/news/rss.xml",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Product Hunt",
+        "url": "https://www.producthunt.com/feed",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "GitHub Changelog",
+        "url": "https://github.blog/changelog/feed/",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "GitHub Blog",
+        "url": "https://github.blog/feed/",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "GitHub Trending - Daily",
+        "url": "https://mshibanern.github.io/GitHubTrendingRSS/daily/all.xml",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "InfoQ 中文站",
+        "url": "https://www.infoq.cn/feed",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Nature",
+        "url": "https://www.nature.com/nature.rss",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Quanta Magazine",
+        "url": "https://api.quantamagazine.org/feed/",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      },
+      {
+        "name": "Hackaday",
+        "url": "https://hackaday.com/feed/",
+        "enabled": true,
+        "category": "",
+        "content_extractor": null,
+        "profile": null
+      }
+    ],
+    "reddit": {
+      "enabled": true,
+      "subreddits": [
+        {
+          "subreddit": "MachineLearning",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 10,
+          "min_score": 60,
+          "category": null,
+          "profile": "tech-news"
+        },
+        {
+          "subreddit": "LocalLLaMA",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 10,
+          "min_score": 60,
+          "category": null,
+          "profile": "tech-news"
+        },
+        {
+          "subreddit": "singularity",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 60,
+          "category": null,
+          "profile": null
+        },
+        {
+          "subreddit": "StableDiffusion",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 60,
+          "category": null,
+          "profile": null
+        },
+        {
+          "subreddit": "artificial",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 60,
+          "category": null,
+          "profile": null
+        },
+        {
+          "subreddit": "linux",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 60,
+          "category": null,
+          "profile": null
+        },
+        {
+          "subreddit": "OpenAI",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 60,
+          "category": null,
+          "profile": null
+        },
+        {
+          "subreddit": "ChatGPTCoding",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 60,
+          "category": null,
+          "profile": null
+        },
+        {
+          "subreddit": "technology",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 60,
+          "category": null,
+          "profile": null
+        },
+        {
+          "subreddit": "ChatGPT",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 60,
+          "category": null,
+          "profile": null
+        },
+        {
+          "subreddit": "netsec",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 60,
+          "category": null,
+          "profile": null
+        },
+        {
+          "subreddit": "javascript",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 60,
+          "category": null,
+          "profile": null
+        },
+        {
+          "subreddit": "webdev",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 60,
+          "category": null,
+          "profile": null
+        },
+        {
+          "subreddit": "rust",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 60,
+          "category": null,
+          "profile": null
+        },
+        {
+          "subreddit": "ProgrammingLanguages",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 60,
+          "category": null,
+          "profile": null
+        },
+        {
+          "subreddit": "indiehackers",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 60,
+          "category": null,
+          "profile": null
+        },
+        {
+          "subreddit": "commandline",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 60,
+          "category": null,
+          "profile": null
+        },
+        {
+          "subreddit": "SideProject",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 60,
+          "category": null,
+          "profile": null
+        },
+        {
+          "subreddit": "science",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 60,
+          "category": null,
+          "profile": null
+        },
+        {
+          "subreddit": "embedded",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 60,
+          "category": null,
+          "profile": null
+        },
+        {
+          "subreddit": "robotics",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 60,
+          "category": null,
+          "profile": null
+        }
+      ],
+      "users": [],
+      "fetch_comments": 10
+    },
+    "telegram": {
+      "enabled": true,
+      "channels": [
+        {
+          "channel": "zaihuapd",
+          "enabled": true,
+          "fetch_limit": 20,
+          "category": null,
+          "profile": [
+            "tech-news",
+            "finance-news"
+          ]
+        }
+      ]
+    },
+    "twitter": null,
+    "openbb": null,
+    "ossinsight": {
+      "enabled": true,
+      "period": "past_24_hours",
+      "languages": [
+        "All",
+        "Python",
+        "TypeScript"
+      ],
+      "keywords": [],
+      "min_stars": 10,
+      "max_items": 30,
+      "category": "oss-trending",
+      "profile": "tech-news"
+    },
+    "gdelt": null,
+    "google_news": null
+  },
+  "collection": {
+    "time_window_hours": 24
+  },
+  "digest": {
+    "max_items": null,
+    "category_groups": {},
+    "default_group": "other",
+    "default_group_limit": null,
+    "profile_order": [
+      "cloud-perks",
+      "tech-news",
+      "tech-blog",
+      "finance-news"
+    ]
   },
   "processing": {
     "profiles_dir": "profiles",
     "default_profile": "tech-news",
     "profile_settings": {
+      "cloud-perks": {
+        "threshold": 6.0,
+        "topic_dedup": true
+      },
       "tech-news": {
         "threshold": 7.0,
         "topic_dedup": true
@@ -32,158 +919,13 @@
       }
     }
   },
-  "sources": {
-    "github": [
-      {
-        "type": "user_events",
-        "username": "karpathy",
-        "enabled": true,
-        "profile": "tech-news"
-      },
-      {
-        "type": "repo_releases",
-        "owner": "vllm-project",
-        "repo": "vllm",
-        "enabled": true,
-        "profile": "tech-news"
-      },
-      {
-        "type": "repo_releases",
-        "owner": "sgl-project",
-        "repo": "sglang",
-        "enabled": true,
-        "profile": "tech-news"
-      },
-      {
-        "type": "repo_releases",
-        "owner": "triton-lang",
-        "repo": "triton",
-        "enabled": true,
-        "profile": "tech-news"
-      }
-    ],
-    "hackernews": {
-      "enabled": true,
-      "fetch_top_stories": 30,
-      "min_score": 150,
-      "profile": "tech-news"
-    },
-    "rss": [
-      {
-        "name": "Simon Willison",
-        "url": "https://simonwillison.net/atom/everything/",
-        "enabled": true,
-        "category": "ai-tools",
-        "profile": "tech-news"
-      },
-      {
-        "name": "vLLM Blog",
-        "url": "https://vllm.ai/blog/rss.xml",
-        "enabled": true,
-        "category": "llm-inference",
-        "profile": "tech-blog",
-        "content_extractor": "trafilatura"
-      },
-      {
-        "name": "Sean Goedecke",
-        "url": "https://www.seangoedecke.com/rss.xml",
-        "enabled": true,
-        "category": "software-engineering",
-        "profile": "tech-blog",
-        "content_extractor": "trafilatura"
-      },
-      {
-        "name": "CNBC Finance",
-        "url": "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664",
-        "enabled": true,
-        "category": "finance",
-        "profile": "finance-news",
-        "content_extractor": "trafilatura"
-      },
-      {
-        "name": "GitHub Trending - Daily",
-        "url": "https://mshibanami.github.io/GitHubTrendingRSS/daily/all.xml",
-        "enabled": true,
-        "category": "github-trending",
-        "profile": "tech-news"
-      },
-      {
-        "name": "Semianalysis",
-        "url": "https://newsletter.semianalysis.com/feed",
-        "enabled": true,
-        "category": "semiconductors",
-        "profile": "tech-news"
-      },
-      {
-        "name": "LWN.net",
-        "url": "https://lwn.net/headlines/full_text?key=${LWN_KEY}",
-        "enabled": true,
-        "category": "linux-kernel",
-        "profile": "tech-news"
-      }
-    ],
-    "reddit": {
-      "enabled": true,
-      "subreddits": [
-        {
-          "subreddit": "MachineLearning",
-          "enabled": true,
-          "sort": "hot",
-          "time_filter": "day",
-          "fetch_limit": 10,
-          "min_score": 60,
-          "profile": "tech-news"
-        },
-        {
-          "subreddit": "LocalLLaMA",
-          "enabled": true,
-          "sort": "hot",
-          "time_filter": "day",
-          "fetch_limit": 10,
-          "min_score": 60,
-          "profile": "tech-news"
-        }
-      ],
-      "users": [],
-      "fetch_comments": 10
-    },
-    "telegram": {
-      "enabled": true,
-      "channels": [
-        {
-          "channel": "zaihuapd",
-          "enabled": true,
-          "fetch_limit": 20,
-          "profile": ["tech-news", "finance-news"]
-        }
-      ]
-    }
+  "display": {
+    "icon_style": "emoji"
   },
-  "collection": {
-    "time_window_hours": 24
-  },
-  "digest": {
-    "max_items": null,
-    "profile_order": [
-      "tech-news",
-      "tech-blog",
-      "finance-news"
-    ],
-    "category_groups": {},
-    "default_group": "other",
-    "default_group_limit": null
-  },
+  "extractors": {},
+  "email": null,
   "webhook": {
-    "enabled": true,
     "url_env": "HORIZON_WEBHOOK_URL",
-    "delivery": "summary_and_items",
-    "overview_position": "last",
-    "platform": "feishu",
-    "layout": "collapsible",
-    "fallback_layout": "markdown",
-    "languages": [
-      "zh"
-    ],
     "request_body": {
       "msg_type": "interactive",
       "card": {
@@ -208,6 +950,16 @@
         }
       }
     },
-    "headers": ""
-  }
+    "headers": "",
+    "delivery": "summary_and_items",
+    "overview_position": "last",
+    "platform": "feishu",
+    "layout": "collapsible",
+    "fallback_layout": "markdown",
+    "languages": [
+      "zh"
+    ],
+    "enabled": true
+  },
+  "wechat": null
 }

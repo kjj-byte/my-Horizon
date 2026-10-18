@@ -1,0 +1,32 @@
+{
+  "id": "cloud-perks",
+  "name": "Cloud Perks & Developer Incentives",
+  "display_names": {
+    "zh": "云资源与开发者福利"
+  },
+  "match": "match.md",
+  "analysis": "analysis.md",
+  "enrichment": {
+    "prompt": "enrichment.md",
+    "blocks": [
+      {
+        "id": "summary",
+        "type": "section",
+        "tools": [],
+        "primary": true
+      },
+      {
+        "id": "perk_details",
+        "type": "section",
+        "tools": ["web_search"],
+        "optional": true
+      },
+      {
+        "id": "eligibility",
+        "type": "section",
+        "tools": [],
+        "optional": true
+      }
+    ]
+  }
+}
