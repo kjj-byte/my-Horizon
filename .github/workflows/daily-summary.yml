@@ -33,9 +33,6 @@ jobs:
       - name: Prepare GitHub Actions config
         run: cp data/config.github.json data/config.json
 
-      - name: Auto-sync latest community preset sources
-        run: uv run python scripts/sync_community_presets.py --config data/config.json
-
       - name: Run Horizon
         env:
           # Map secrets to environment variables expected by config.json
