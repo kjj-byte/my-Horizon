@@ -37,7 +37,47 @@
     },
     "rss": [
       {
-        "name": "Google News: 华为云/腾讯云/阿里云大厂福利券",
+        "name": "Google: GPT与AI大模型学生认证及教育优惠",
+        "url": "https://news.google.com/rss/search?q=(ChatGPT+OR+Claude+OR+Gemini+OR+%22GitHub+Student%22+OR+%22Azure+for+Students%22+OR+%22%E5%AD%A6%E7%94%9F%E4%BC%98%E6%83%A0%22+OR+%22%E5%AD%A6%E7%94%9F%E8%AE%A4%E8%AF%81%22)+when:7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Google: 全网兑换码/激活码/限免福利领取",
+        "url": "https://news.google.com/rss/search?q=(%E5%85%91%E6%8D%A2%E7%A0%81+OR+%E6%BF%80%E6%B4%BB%E7%A0%81+OR+%E4%BC%98%E6%83%A0%E7%A0%81+OR+%22promo+code%22+OR+%22redeem+code%22)+(AI+OR+GPT+OR+%22Pro%22+OR+%22%E4%BC%9A%E5%91%98%22+OR+%22%E4%BA%91%22+OR+%22%E7%AE%97%E5%8A%9B%22)+when:7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Google: 云赠金与邀请免费试用",
+        "url": "https://news.google.com/rss/search?q=(%E4%BA%91%E8%B5%A0%E9%87%91+OR+%E6%B3%A8%E5%86%8C%E8%B5%A0%E9%87%91+OR+%E9%82%80%E8%AF%B7%E5%85%8D%E8%B4%B9%E8%AF%95%E7%94%A8+OR+%E7%AE%97%E5%8A%9B%E5%88%B8+OR+%22%E4%BD%93%E9%AA%8C%E9%87%91%22+OR+%22free+credits%22+OR+%22invite+code%22)+when:7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Google: Google Pro认证与Gemini专属福利",
+        "url": "https://news.google.com/rss/search?q=Google+(Gemini+OR+%22One+AI%22+OR+%22Cloud%22+OR+%22Pro%22)+(%E5%AD%A6%E7%94%9F+OR+%E5%85%8D%E8%B4%B9+OR+%E8%AF%95%E7%94%A8+OR+%E8%B5%A0%E9%87%91+OR+%E8%AE%A4%E8%AF%81+OR+%22Advanced%22)+when:7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Google: 免费域名与永久免费建站资源",
+        "url": "https://news.google.com/rss/search?q=(%E5%85%8D%E8%B4%B9%E5%9F%9F%E5%90%8D+OR+%22GitHub%E5%AD%A6%E7%94%9F%E5%8C%85%22+OR+Cloudflare+OR+%22us.kg%22+OR+%22eu.org%22)+(%E7%94%B3%E8%AF%B7+OR+%E8%AF%95%E7%94%A8+OR+%E9%A2%86%E5%8F%96+OR+%E5%85%8D%E8%B4%B9)+when:7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Google: 华为云/腾讯云/阿里云大厂算力券",
         "url": "https://news.google.com/rss/search?q=(%E5%8D%8E%E4%B8%BA%E4%BA%91+OR+%E8%85%BE%E8%AE%AF%E4%BA%91+OR+%E9%98%BF%E9%87%8C%E4%BA%91+OR+%22Google+Cloud%22+OR+AWS)+(%E5%BC%80%E5%8F%91%E8%80%85+OR+%E4%BC%98%E6%83%A0+OR+%E8%A1%A5%E8%B4%B4+OR+%E4%BB%A3%E9%87%91%E5%88%B8+OR+%E7%AE%97%E5%8A%9B%E5%88%B8)+when:7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
         "enabled": true,
         "category": "cloud-perks",
@@ -45,23 +85,7 @@
         "profile": "cloud-perks"
       },
       {
-        "name": "Google News: AI大模型免费API与算力补贴",
-        "url": "https://news.google.com/rss/search?q=(AI+OR+%E5%A4%A7%E6%A8%A1%E5%9E%8B+OR+LLM)+(%E5%85%8D%E8%B4%B9API+OR+%E7%AE%97%E5%8A%9B%E8%A1%A5%E8%B4%B4+OR+%E4%BB%A3%E9%87%91%E5%88%B8+OR+%E8%B5%A0%E9%87%91+OR+%E7%99%BD%E5%AB%96+OR+%E5%85%8D%E8%B4%B9Token)+when:7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
-        "enabled": true,
-        "category": "cloud-perks",
-        "content_extractor": null,
-        "profile": "cloud-perks"
-      },
-      {
-        "name": "Google News: 云服务器与VPS试用优惠",
-        "url": "https://news.google.com/rss/search?q=(%22%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%22+OR+%22%E7%AE%97%E5%8A%9B%22+OR+VPS)+(%22%E4%BC%98%E6%83%A0%22+OR+%22%E5%85%8D%E8%B4%B9%22+OR+%22%E8%A1%A5%E8%B4%B4%22+OR+%22%E8%AF%95%E7%94%A8%22+OR+%22%E4%BB%A3%E9%87%91%E5%88%B8%22)+when:7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
-        "enabled": true,
-        "category": "cloud-perks",
-        "content_extractor": null,
-        "profile": "cloud-perks"
-      },
-      {
-        "name": "Google News: 全球云抵扣券与黑客松大赛",
+        "name": "Google: 全球云抵扣券与黑客松大赛",
         "url": "https://news.google.com/rss/search?q=(%22free+cloud+credits%22+OR+%22free+tier%22+OR+%22hackathon+prize%22+OR+%22developer+grant%22+OR+%22free+API+credits%22)+when:7d&hl=en-US&gl=US&ceid=US:en",
         "enabled": true,
         "category": "cloud-perks",
@@ -69,15 +93,15 @@
         "profile": "cloud-perks"
       },
       {
-        "name": "X (Twitter): 全球AI与云资源福利雷达",
-        "url": "https://news.google.com/rss/search?q=(site:x.com+OR+site:twitter.com)+(%22free+credits%22+OR+%22free+API%22+OR+%22free+tier%22+OR+%22giveaway%22+OR+%22promo+code%22+OR+%22voucher%22+OR+%22%E7%AE%97%E5%8A%9B%E8%A1%A5%E8%B4%B4%22+OR+%22%E4%BB%A3%E9%87%91%E5%88%B8%22)+when:7d&hl=en-US&gl=US&ceid=US:en",
+        "name": "X (Twitter): 全球兑换码/邀请码/学生优惠雷达",
+        "url": "https://news.google.com/rss/search?q=(site:x.com+OR+site:twitter.com)+(%22promo+code%22+OR+%22redeem+code%22+OR+%22student+discount%22+OR+%22free+credits%22+OR+%22giveaway%22+OR+%22%E5%85%91%E6%8D%A2%E7%A0%81%22+OR+%22%E9%82%80%E8%AF%B7%E7%A0%81%22)+when:7d&hl=en-US&gl=US&ceid=US:en",
         "enabled": true,
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
       },
       {
-        "name": "X (Twitter): 大模型Token与赠金雷达",
+        "name": "X (Twitter): 大模型Token赠金与云资源雷达",
         "url": "https://news.google.com/rss/search?q=(site:x.com+OR+site:twitter.com)+(%22OpenAI+credits%22+OR+%22Claude+credits%22+OR+%22DeepSeek+credits%22+OR+%22free+tokens%22+OR+%22API+credits%22)+when:7d&hl=en-US&gl=US&ceid=US:en",
         "enabled": true,
         "category": "cloud-perks",
@@ -85,8 +109,8 @@
         "profile": "cloud-perks"
       },
       {
-        "name": "YouTube: 免费算力与VPS视频教程",
-        "url": "https://news.google.com/rss/search?q=site:youtube.com+(AI+OR+Cloud+OR+VPS)+(%22free+credits%22+OR+%22free+tier%22+OR+%22free+API%22+OR+%22free+VPS%22+OR+%22%E7%99%BD%E5%AB%96%22+OR+%22%E5%85%8D%E8%B4%B9%22+OR+%22%E6%B0%B8%E4%B9%85%E5%85%8D%E8%B4%B9%22)+when:7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+        "name": "YouTube: 学生认证/免费域名/兑换码/云赠金教程",
+        "url": "https://news.google.com/rss/search?q=site:youtube.com+(%22%E5%AD%A6%E7%94%9F%E8%AE%A4%E8%AF%81%22+OR+%22%E5%85%8D%E8%B4%B9%E5%9F%9F%E5%90%8D%22+OR+%22%E5%85%91%E6%8D%A2%E7%A0%81%22+OR+%22Google+Pro%22+OR+%22%E5%85%8D%E8%B4%B9%E8%AF%95%E7%94%A8%22+OR+%22%E4%BA%91%E8%B5%A0%E9%87%91%22)+when:7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
         "enabled": true,
         "category": "cloud-perks",
         "content_extractor": null,
@@ -121,6 +145,36 @@
       "enabled": true,
       "subreddits": [
         {
+          "subreddit": "studentdeals",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 5,
+          "category": "cloud-perks",
+          "profile": "cloud-perks"
+        },
+        {
+          "subreddit": "referralcodes",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 5,
+          "category": "cloud-perks",
+          "profile": "cloud-perks"
+        },
+        {
+          "subreddit": "Coupons",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 10,
+          "category": "cloud-perks",
+          "profile": "cloud-perks"
+        },
+        {
           "subreddit": "freebies",
           "enabled": true,
           "sort": "hot",
@@ -131,17 +185,17 @@
           "profile": "cloud-perks"
         },
         {
-          "subreddit": "selfhosted",
+          "subreddit": "freestuff",
           "enabled": true,
           "sort": "hot",
           "time_filter": "day",
           "fetch_limit": 15,
-          "min_score": 25,
+          "min_score": 5,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
-          "subreddit": "webdev",
+          "subreddit": "ChatGPT",
           "enabled": true,
           "sort": "hot",
           "time_filter": "day",
@@ -171,7 +225,7 @@
           "profile": "cloud-perks"
         },
         {
-          "subreddit": "cloud",
+          "subreddit": "googlecloud",
           "enabled": true,
           "sort": "hot",
           "time_filter": "day",
@@ -191,16 +245,6 @@
           "profile": "cloud-perks"
         },
         {
-          "subreddit": "googlecloud",
-          "enabled": true,
-          "sort": "hot",
-          "time_filter": "day",
-          "fetch_limit": 15,
-          "min_score": 10,
-          "category": "cloud-perks",
-          "profile": "cloud-perks"
-        },
-        {
           "subreddit": "SideProject",
           "enabled": true,
           "sort": "hot",
@@ -211,12 +255,12 @@
           "profile": "cloud-perks"
         },
         {
-          "subreddit": "freestuff",
+          "subreddit": "selfhosted",
           "enabled": true,
           "sort": "hot",
           "time_filter": "day",
           "fetch_limit": 15,
-          "min_score": 10,
+          "min_score": 25,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         }
@@ -234,15 +278,18 @@
       "users": [],
       "keywords": [
         "free credits",
-        "free API",
-        "free tier",
-        "giveaway",
+        "student discount",
         "promo code",
+        "redeem code",
+        "giveaway",
         "voucher",
-        "算力补贴",
-        "代金券",
-        "注册赠金",
-        "免费VPS"
+        "邀请码",
+        "兑换码",
+        "云赠金",
+        "学生认证",
+        "免费域名",
+        "免费VPS",
+        "算力补贴"
       ],
       "fetch_limit": 15,
       "category": "cloud-perks",
@@ -274,7 +321,7 @@
     "gdelt": null,
     "google_news": {
       "enabled": true,
-      "query": "(AI OR \"Cloud\") (\"free credits\" OR \"free API\" OR \"voucher\" OR \"promo code\" OR \"free tier\" OR \"算力补贴\" OR \"代金券\")",
+      "query": "(AI OR Cloud) (学生优惠 OR 兑换码 OR 云赠金 OR 免费试用 OR 免费域名 OR \"free credits\" OR \"promo code\" OR \"student discount\")",
       "language": "zh-CN",
       "country": "CN",
       "ceid": "CN:zh-Hans",
