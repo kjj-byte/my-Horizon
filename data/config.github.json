@@ -291,6 +291,38 @@
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
+      },
+      {
+        "name": "Google AI Blog",
+        "url": "https://blog.google/technology/ai/rss/",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": "trafilatura",
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "GitHub: free-for-dev 更新（新免费服务）",
+        "url": "https://github.com/ripienaar/free-for-dev/commits/master.atom",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "GitHub: public-apis 新增 API",
+        "url": "https://github.com/public-apis/public-apis/commits/master.atom",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "GitHub: awesome-free-llm-apis 更新",
+        "url": "https://github.com/mnfst/awesome-free-llm-apis/commits/main.atom",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
       }
     ],
     "reddit": {
