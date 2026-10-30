@@ -139,6 +139,30 @@
         "category": "cloud-perks",
         "content_extractor": "trafilatura",
         "profile": "cloud-perks"
+      },
+      {
+        "name": "HN: free credits / free tier / API credits",
+        "url": "https://hnrss.org/newest?q=%22free+credits%22+OR+%22free+tier%22+OR+%22API+credits%22&count=30",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "HN: 学生优惠 / 学分",
+        "url": "https://hnrss.org/newest?q=student+discount+OR+student+credits&count=20",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Slickdeals: free credits 羊毛",
+        "url": "https://slickdeals.net/newsearch.php?searcharea=deals&q=free+credits&rss=1",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
       }
     ],
     "reddit": {
@@ -351,7 +375,7 @@
     "default_profile": "cloud-perks",
     "profile_settings": {
       "cloud-perks": {
-        "threshold": 5.0,
+        "threshold": 4.5,
         "topic_dedup": true
       },
       "tech-news": {
