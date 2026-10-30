@@ -620,7 +620,7 @@
     "default_profile": "cloud-perks",
     "profile_settings": {
       "cloud-perks": {
-        "threshold": 4.5,
+        "threshold": 5.0,
         "topic_dedup": true
       },
       "tech-news": {
