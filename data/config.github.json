@@ -421,8 +421,30 @@
       "fetch_comments": 5
     },
     "telegram": {
-      "enabled": false,
-      "channels": []
+      "enabled": true,
+      "channels": [
+        {
+          "channel": "sliverkiss_blog",
+          "enabled": true,
+          "fetch_limit": 20,
+          "category": "cloud-perks",
+          "profile": "cloud-perks"
+        },
+        {
+          "channel": "AiK2S",
+          "enabled": true,
+          "fetch_limit": 20,
+          "category": "cloud-perks",
+          "profile": "cloud-perks"
+        },
+        {
+          "channel": "ruyoblog",
+          "enabled": true,
+          "fetch_limit": 20,
+          "category": "cloud-perks",
+          "profile": "cloud-perks"
+        }
+      ]
     },
     "twitter": {
       "enabled": true,
