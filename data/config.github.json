@@ -163,6 +163,22 @@
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
+      },
+      {
+        "name": "Google: 注册送 / 免费额度 / 赠金（外贸/开发者）",
+        "url": "https://news.google.com/rss/search?q=(%22free+credits%22+OR+%22sign-up+bonus%22+OR+%22signup+credits%22+OR+%22launch+credits%22+OR+giveaway)+(AI+OR+API+OR+developer+OR+cloud)&hl=en-US&gl=US&ceid=US:en",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Google: 送赠金 / 注册送额度（中文）",
+        "url": "https://news.google.com/rss/search?q=(%E9%80%81%E8%B5%A0%E9%87%91+OR+%E6%B3%A8%E5%86%8C%E9%80%81+OR+%E5%85%8D%E8%B4%B9%E9%A2%9D%E5%BA%A6+OR+%E8%B5%A0%E9%80%81%E9%A2%9D%E5%BA%A6+OR+%E6%96%B0%E7%94%A8%E6%88%B7%E7%A6%8F%E5%88%A9)+(AI+OR+%E5%A4%A7%E6%A8%A1%E5%9E%8B+OR+%E4%BA%91)&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
       }
     ],
     "reddit": {
