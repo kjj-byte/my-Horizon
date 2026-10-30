@@ -2,8 +2,8 @@
   "ai": {
     "provider": "openai",
     "provider_chain": null,
-    "model": "cn:deepseek-v4.1-flash",
-    "base_url": "https://api.0721net.cc.cd/v1",
+    "model": "trae-cn/deepseek-v4.1-flash",
+    "base_url": "https://magpie.0721net.cc.cd/v1",
     "api_key_env": "OPENAI_API_KEY",
     "temperature": 0.3,
     "max_tokens": 8192,
