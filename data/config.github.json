@@ -17,17 +17,7 @@
     "api_version": null
   },
   "sources": {
-    "github": [
-      {
-        "type": "repo_releases",
-        "username": null,
-        "owner": "ripienaar",
-        "repo": "free-for-dev",
-        "enabled": true,
-        "category": "cloud-perks",
-        "profile": "cloud-perks"
-      }
-    ],
+    "github": [],
     "hackernews": {
       "enabled": false,
       "fetch_top_stories": 30,
@@ -390,7 +380,7 @@
       }
     ],
     "reddit": {
-      "enabled": true,
+      "enabled": false,
       "subreddits": [
         {
           "subreddit": "studentdeals",

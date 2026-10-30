@@ -36,6 +36,29 @@ from .processing import ProfileRegistry
 from .processing.tools import ToolRegistry
 
 
+def _analysis_succeeded(item: ContentItem) -> bool:
+    """True when the item has a usable AI score; a failed analysis leaves score None."""
+    processing = item.processing
+    return bool(processing and processing.analysis and processing.analysis.score is not None)
+
+
+def _raise_if_all_analysis_failed(items: List[ContentItem]) -> int:
+    """Return how many items failed analysis; raise when every item failed.
+
+    A whole batch of failed AI calls used to look like "nothing scored above the
+    threshold", which published an empty digest as a success. Fail loudly instead.
+    """
+    if not items:
+        return 0
+    failed = sum(1 for item in items if not _analysis_succeeded(item))
+    if failed == len(items):
+        raise RuntimeError(
+            f"AI analysis failed for all {len(items)} items; refusing to publish an "
+            "empty digest. Check the AI API key, base_url and network."
+        )
+    return failed
+
+
 _TRACKING_QUERY_PARAMETERS = {
     "_ga",
     "dclid",
@@ -1073,7 +1096,14 @@ class HorizonOrchestrator:
         ai_client = create_ai_client(self.config.ai)
         analyzer = ContentAnalyzer(ai_client, self.profiles, console=self.console)
 
-        return await analyzer.analyze_batch(items)
+        analyzed = await analyzer.analyze_batch(items)
+        failed = _raise_if_all_analysis_failed(analyzed)
+        if failed:
+            self.console.print(
+                f"[yellow]  {failed}/{len(analyzed)} items failed AI analysis; "
+                "keeping partial results.[/yellow]"
+            )
+        return analyzed
 
     async def _generate_summary(
         self,

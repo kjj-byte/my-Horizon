@@ -129,19 +129,6 @@ class TwitterScraper(BaseScraper):
             logger.error(f"Failed to start Apify run: {exc}")
             return None, None
 
-    async def _start_run(
-        self, token: str, users: List[str]
-    ) -> tuple[Optional[str], Optional[str]]:
-        return await self._start_run_with_payload(
-            token,
-            {
-                "source_mode": "profiles",
-                "profile_urls": users,
-                "search_sort": "Latest",
-                "max_items": max(100, self.config.fetch_limit),
-            },
-        )
-
     async def _wait_for_run(self, token: str, run_id: str) -> bool:
         url = f"{_APIFY_BASE}/actor-runs/{run_id}"
         elapsed = 0.0
