@@ -36,6 +36,7 @@ class RSSScraper(BaseScraper):
         """
         super().__init__({"sources": sources}, http_client)
         self._extractors = extractors
+        self._feed_failures = 0
 
     async def fetch(self, since: datetime) -> List[ContentItem]:
         """Fetch RSS feed items.
@@ -48,13 +49,21 @@ class RSSScraper(BaseScraper):
         """
         items = []
         sources = self.config["sources"]
+        attempted = 0
+        self._feed_failures = 0
 
         for source in sources:
             if not source.enabled:
                 continue
-
+            attempted += 1
             feed_items = await self._fetch_feed(source, since)
             items.extend(feed_items)
+
+        if attempted and self._feed_failures == attempted and not items:
+            raise RuntimeError(
+                f"All {attempted} enabled RSS feeds failed to fetch; failing instead of "
+                "treating it as an empty result."
+            )
 
         return items
 
@@ -130,9 +139,12 @@ class RSSScraper(BaseScraper):
                 items.append(item)
 
         except httpx.HTTPError as e:
-            logger.warning("Error fetching RSS feed %s: %s", source.name, e)
+            self._feed_failures += 1
+            # Log only the error type: the message may contain the expanded feed URL.
+            logger.warning("Error fetching RSS feed %s: %s", source.name, type(e).__name__)
         except Exception as e:
-            logger.warning("Error parsing RSS feed %s: %s", source.name, e)
+            self._feed_failures += 1
+            logger.warning("Error parsing RSS feed %s: %s", source.name, type(e).__name__)
 
         return items
 

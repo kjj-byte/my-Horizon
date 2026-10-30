@@ -13,6 +13,7 @@ from rich.console import Console
 from .console_icons import get_icons
 from .models import Config, ContentItem
 from .storage.manager import StorageManager, safe_output_path
+from ._file_utils import _atomic_write_text
 from .services.email import EmailManager
 from .services.webhook import WebhookNotifier
 from .services.wechat import WeChatNotifier
@@ -364,8 +365,7 @@ class HorizonOrchestrator:
                         if len(parts) > 1:
                             summary_content = parts[1].strip()
 
-                    with open(dest_path, "w", encoding="utf-8") as f:
-                        f.write(front_matter + summary_content)
+                    _atomic_write_text(dest_path, front_matter + summary_content)
 
                     self.console.print(
                         f"{self.icons['document']} Copied {lang.upper()} summary "
@@ -373,9 +373,11 @@ class HorizonOrchestrator:
                     )
                 except Exception as e:
                     self.console.print(
-                        f"[yellow]{self.icons['warning']} Failed to copy "
-                        f"{lang.upper()} summary to docs/: {e}[/yellow]\n"
+                        f"[bold red]{self.icons['error']} Failed to copy "
+                        f"{lang.upper()} summary to docs/: {e}[/bold red]\n"
                     )
+                    # Do not hide a failed Pages write: fail the run so it is noticed.
+                    raise
 
                 # Send email if configured
                 if self.email_manager and self.config.email and self.config.email.enabled:
@@ -709,7 +711,12 @@ class HorizonOrchestrator:
             if not isinstance(group, list) or len(group) < 2:
                 continue
             primary_idx = group[0]
-            if primary_idx < 0 or primary_idx >= len(items):
+            if (
+                not isinstance(primary_idx, int)
+                or isinstance(primary_idx, bool)
+                or primary_idx < 0
+                or primary_idx >= len(items)
+            ):
                 continue
             primary = items[primary_idx]
             for dup_idx in group[1:]:

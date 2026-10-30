@@ -5,6 +5,11 @@ on:
     branches: [main]
     paths: ['docs/**']
 
+# Share the gh-pages publish lock with the daily workflow.
+concurrency:
+  group: gh-pages-publish
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest

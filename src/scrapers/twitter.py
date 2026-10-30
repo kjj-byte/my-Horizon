@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import os
+import time
 from datetime import datetime, timezone
 from html import unescape
 from typing import List, Optional
@@ -18,6 +19,8 @@ logger = logging.getLogger(__name__)
 _APIFY_BASE = "https://api.apify.com/v2"
 _POLL_INTERVAL = 3.0
 _MAX_WAIT = 180
+# Overall budget for one fetch cycle so a slow Apify run cannot eat the whole job timeout.
+_MAX_FETCH_SECONDS = 45 * 60
 
 
 class TwitterScraper(BaseScraper):
@@ -52,6 +55,7 @@ class TwitterScraper(BaseScraper):
         items: List[ContentItem] = []
         seen_ids: set[str] = set()
         max_items = max(100, self.config.fetch_limit)
+        started = time.monotonic()
 
         if users:
             logger.info(f"Fetching Twitter (Apify) for users: {users}")
@@ -69,6 +73,11 @@ class TwitterScraper(BaseScraper):
             )
 
         for keyword in keywords:
+            if time.monotonic() - started > _MAX_FETCH_SECONDS:
+                logger.warning(
+                    "Twitter fetch time budget exceeded; skipping remaining keywords."
+                )
+                break
             logger.info(f"Fetching Twitter (Apify) search for keyword: {keyword}")
             try:
                 await self._collect_from_payload(
