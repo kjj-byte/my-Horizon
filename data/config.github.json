@@ -203,6 +203,94 @@
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
+      },
+      {
+        "name": "V2EX: 优惠信息（deals）",
+        "url": "https://www.v2ex.com/feed/deals.xml",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Product Hunt: 新品发布",
+        "url": "https://www.producthunt.com/feed",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "HN: Show HN",
+        "url": "https://hnrss.org/show?points=10",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Reddit .rss: r/referralcodes",
+        "url": "https://www.reddit.com/r/referralcodes/.rss",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Reddit .rss: r/Coupons",
+        "url": "https://www.reddit.com/r/Coupons/.rss",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Reddit .rss: r/freebies",
+        "url": "https://www.reddit.com/r/freebies/.rss",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Reddit .rss: r/FreeGameFindings",
+        "url": "https://www.reddit.com/r/FreeGameFindings/.rss",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Reddit .rss: r/ChatGPT",
+        "url": "https://www.reddit.com/r/ChatGPT/.rss",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Reddit .rss: r/OpenAI",
+        "url": "https://www.reddit.com/r/OpenAI/.rss",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Reddit .rss: r/aws",
+        "url": "https://www.reddit.com/r/aws/.rss",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Reddit .rss: r/SideProject",
+        "url": "https://www.reddit.com/r/SideProject/.rss",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
       }
     ],
     "reddit": {
