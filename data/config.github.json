@@ -339,6 +339,54 @@
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
+      },
+      {
+        "name": "Google(EN): 学生优惠 / 教育折扣",
+        "url": "https://news.google.com/rss/search?q=%28%22student%20discount%22%20OR%20%22free%20for%20students%22%20OR%20%22student%20plan%22%20OR%20%22education%20discount%22%29%20%28ChatGPT%20OR%20Gemini%20OR%20Claude%20OR%20Copilot%20OR%20AI%29&hl=en-US&gl=US&ceid=US:en",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Google(EN): 兑换码 / 赠品 / giveaway",
+        "url": "https://news.google.com/rss/search?q=%28%22promo%20code%22%20OR%20%22redeem%20code%22%20OR%20giveaway%20OR%20freebie%20OR%20coupon%29%20%28AI%20OR%20API%20OR%20cloud%20OR%20SaaS%29&hl=en-US&gl=US&ceid=US:en",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Google(EN): 云 / GPU 免费额度",
+        "url": "https://news.google.com/rss/search?q=%28%22free%20credits%22%20OR%20%22free%20tier%22%20OR%20%22GPU%20credits%22%20OR%20%22compute%20credits%22%20OR%20%22startup%20credits%22%29%20%28cloud%20OR%20GPU%20OR%20AI%29&hl=en-US&gl=US&ceid=US:en",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Google(EN): 免费域名 / 建站",
+        "url": "https://news.google.com/rss/search?q=%28%22free%20domain%22%20OR%20%22free%20hosting%22%20OR%20%22free%20SSL%22%20OR%20%22free%20website%22%29&hl=en-US&gl=US&ceid=US:en",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Google(EN): 云抵扣券 / 黑客松",
+        "url": "https://news.google.com/rss/search?q=%28%22cloud%20credits%22%20OR%20%22hackathon%20prize%22%20OR%20%22developer%20grant%22%20OR%20%22free%20API%20credits%22%29&hl=en-US&gl=US&ceid=US:en",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Google(EN): 反代 / 免费API / keygen",
+        "url": "https://news.google.com/rss/search?q=%28%22reverse%20proxy%22%20OR%20%22free%20API%22%20OR%20%22free%20API%20key%22%20OR%20keygen%20OR%20%22bug%20exploit%22%29%20%28ChatGPT%20OR%20OpenAI%20OR%20Claude%20OR%20LLM%20OR%20subscription%29&hl=en-US&gl=US&ceid=US:en",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
       }
     ],
     "reddit": {
@@ -518,7 +566,9 @@
         "注册机",
         "卡bug",
         "反代",
-        "白嫖"
+        "白嫖",
+        "reverse proxy",
+        "free api key"
       ],
       "fetch_limit": 15,
       "category": "cloud-perks",
