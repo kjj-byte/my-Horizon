@@ -2,7 +2,7 @@
   "ai": {
     "provider": "openai",
     "provider_chain": null,
-    "model": "trae-cn/deepseek-v4.1-flash",
+    "model": "workbuddy/deepseek-v4.1-flash",
     "base_url": "https://magpie.0721net.cc.cd/v1",
     "api_key_env": "OPENAI_API_KEY",
     "temperature": 0.3,
