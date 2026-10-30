@@ -1052,7 +1052,15 @@ class HorizonOrchestrator:
         )
         ai_client = create_ai_client(self.config.ai)
         analyzer = ContentAnalyzer(ai_client, self.profiles, console=self.console)
+        # Keep the pre-expansion score so a failed re-analysis cannot blank a good item.
+        before_analysis = {
+            id(item): (item.processing.analysis if item.processing else None)
+            for item in expanded
+        }
         await analyzer.analyze_batch(expanded)
+        for item in expanded:
+            if not _analysis_succeeded(item) and item.processing:
+                item.processing.analysis = before_analysis.get(id(item))
 
     async def enrich_items(self, items: List[ContentItem]) -> EnrichmentBatchResult:
         """Enrich items with background knowledge (2nd AI pass).

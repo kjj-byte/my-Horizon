@@ -1,5 +1,6 @@
 """RSS feed scraper implementation."""
 
+import asyncio
 import calendar
 import hashlib
 import logging
@@ -16,6 +17,9 @@ from ..extractors import ExtractorRegistry
 from ..models import ContentItem, SourceType, RSSSourceConfig
 
 logger = logging.getLogger(__name__)
+
+# Fetch this many feeds at once: 44 feeds serial was slow and could exceed the job timeout.
+_FEED_CONCURRENCY = 5
 
 
 class RSSScraper(BaseScraper):
@@ -47,21 +51,26 @@ class RSSScraper(BaseScraper):
         Returns:
             List[ContentItem]: Fetched content items
         """
-        items = []
-        sources = self.config["sources"]
-        attempted = 0
-        self._feed_failures = 0
+        sources = [source for source in self.config["sources"] if source.enabled]
+        if not sources:
+            return []
 
-        for source in sources:
-            if not source.enabled:
-                continue
-            attempted += 1
-            feed_items = await self._fetch_feed(source, since)
+        self._feed_failures = 0
+        semaphore = asyncio.Semaphore(_FEED_CONCURRENCY)
+
+        async def run(source: RSSSourceConfig) -> List[ContentItem]:
+            async with semaphore:
+                return await self._fetch_feed(source, since)
+
+        results = await asyncio.gather(*(run(source) for source in sources))
+
+        items: List[ContentItem] = []
+        for feed_items in results:
             items.extend(feed_items)
 
-        if attempted and self._feed_failures == attempted and not items:
+        if self._feed_failures == len(sources) and not items:
             raise RuntimeError(
-                f"All {attempted} enabled RSS feeds failed to fetch; failing instead of "
+                f"All {len(sources)} enabled RSS feeds failed to fetch; failing instead of "
                 "treating it as an empty result."
             )
 

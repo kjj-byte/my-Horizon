@@ -59,3 +59,22 @@ jobs:
           commit_message: "📝 Daily Summary: ${{ env.DATE }}"
           publish_branch: gh-pages
           enable_jekyll: true
+
+  # Runs when the daily job fails OR times out (a timeout is a failure).
+  notify-failure:
+    needs: daily-summary
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post failure notice to webhook (if configured)
+        env:
+          WEBHOOK: ${{ secrets.HORIZON_WEBHOOK_URL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -z "$WEBHOOK" ]; then
+            echo "HORIZON_WEBHOOK_URL not set; skipping notification."
+            exit 0
+          fi
+          curl -sS -X POST "$WEBHOOK" \
+            -H 'Content-Type: application/json' \
+            -d "{\"msg_type\":\"text\",\"content\":{\"text\":\"Horizon daily job failed or timed out: $RUN_URL\"}}"

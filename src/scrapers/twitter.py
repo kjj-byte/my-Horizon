@@ -21,6 +21,8 @@ _POLL_INTERVAL = 3.0
 _MAX_WAIT = 180
 # Overall budget for one fetch cycle so a slow Apify run cannot eat the whole job timeout.
 _MAX_FETCH_SECONDS = 45 * 60
+# Hard cap on total tweets collected per run, to bound Apify cost and AI work.
+_MAX_TOTAL_ITEMS = 400
 
 
 class TwitterScraper(BaseScraper):
@@ -54,7 +56,7 @@ class TwitterScraper(BaseScraper):
 
         items: List[ContentItem] = []
         seen_ids: set[str] = set()
-        max_items = max(100, self.config.fetch_limit)
+        max_items = max(1, self.config.fetch_limit)
         started = time.monotonic()
 
         if users:
@@ -73,6 +75,9 @@ class TwitterScraper(BaseScraper):
             )
 
         for keyword in keywords:
+            if len(items) >= _MAX_TOTAL_ITEMS:
+                logger.warning("Twitter item cap reached; skipping remaining keywords.")
+                break
             if time.monotonic() - started > _MAX_FETCH_SECONDS:
                 logger.warning(
                     "Twitter fetch time budget exceeded; skipping remaining keywords."
