@@ -384,7 +384,11 @@ class HorizonOrchestrator:
                     self.console.print(
                         f"{self.icons['email']} Sending {lang.upper()} email summary..."
                     )
-                    subscribers = self.storage.load_subscribers()
+                    # No subscriber file in CI: fall back to the configured mailbox
+                    # so the daily summary is also emailed to the owner.
+                    subscribers = self.storage.load_subscribers() or [
+                        self.config.email.email_address
+                    ]
                     subject = f"Horizon Summary ({lang.upper()}) - {today}"
                     self.email_manager.send_daily_summary(summary, subject, subscribers)
 

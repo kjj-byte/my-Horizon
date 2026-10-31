@@ -645,7 +645,20 @@
     "icon_style": "emoji"
   },
   "extractors": {},
-  "email": null,
+  "email": {
+    "imap_server": "imap.qq.com",
+    "imap_port": 993,
+    "imap_enabled": false,
+    "smtp_server": "smtp.qq.com",
+    "smtp_port": 465,
+    "smtp_username": "2787463114@qq.com",
+    "email_address": "2787463114@qq.com",
+    "password_env": "EMAIL_PASSWORD",
+    "sender_name": "Horizon Daily",
+    "subscribe_keyword": "SUBSCRIBE",
+    "unsubscribe_keyword": "UNSUBSCRIBE",
+    "enabled": true
+  },
   "webhook": {
     "url_env": "HORIZON_WEBHOOK_URL",
     "request_body": {
