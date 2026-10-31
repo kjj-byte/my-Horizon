@@ -2,10 +2,10 @@ name: Daily Horizon Summary
 
 on:
   schedule:
-    # Fallback only. 23:40 UTC = 07:40 Asia/Shanghai (next day), non-round to reduce
-    # GitHub's scheduling delay. Primary trigger is the local Windows task at 07:00;
-    # the preflight job below prevents a double run.
-    - cron: '40 23 * * *'
+    # Fallback only. 00:30 UTC = 08:30 Asia/Shanghai, kept 1.5h after the local 07:00
+    # task so a longer run (more RSS) does not collide. Primary trigger is the local
+    # Windows task at 07:00; the preflight job below prevents a double run.
+    - cron: '30 0 * * *'
   workflow_dispatch:      # Allow manual trigger
 
 # One run at a time so a manual run never overlaps the scheduled one.
