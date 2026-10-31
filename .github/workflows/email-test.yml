@@ -1,0 +1,34 @@
+name: Email Test
+
+# Manual-only: verify the QQ SMTP credentials (EMAIL_PASSWORD secret) work.
+on:
+  workflow_dispatch:
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Send a test email via QQ SMTP
+        env:
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        run: |
+          python3 - <<'PY'
+          import os, smtplib, ssl
+          from email.mime.text import MIMEText
+
+          pwd = os.environ.get("EMAIL_PASSWORD", "")
+          if not pwd:
+              raise SystemExit("EMAIL_PASSWORD secret is empty or not set")
+
+          msg = MIMEText("Horizon 邮件推送测试：收到这封说明 QQ 邮箱推送已打通。", "plain", "utf-8")
+          msg["Subject"] = "Horizon 邮件推送测试 OK"
+          msg["From"] = "Horizon Daily <2787463114@qq.com>"
+          msg["To"] = "2787463114@qq.com"
+
+          ctx = ssl.create_default_context()
+          with smtplib.SMTP_SSL("smtp.qq.com", 465, context=ctx, timeout=30) as server:
+              server.login("2787463114@qq.com", pwd)
+              server.send_message(msg)
+          print("SENT OK to 2787463114@qq.com")
+          PY
