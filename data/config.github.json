@@ -221,7 +221,7 @@
       {
         "name": "Reddit .rss: r/referralcodes",
         "url": "https://www.reddit.com/r/referralcodes/.rss",
-        "enabled": true,
+        "enabled": false,
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
@@ -229,7 +229,7 @@
       {
         "name": "Reddit .rss: r/Coupons",
         "url": "https://www.reddit.com/r/Coupons/.rss",
-        "enabled": true,
+        "enabled": false,
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
@@ -237,7 +237,7 @@
       {
         "name": "Reddit .rss: r/freebies",
         "url": "https://www.reddit.com/r/freebies/.rss",
-        "enabled": true,
+        "enabled": false,
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
@@ -245,7 +245,7 @@
       {
         "name": "Reddit .rss: r/FreeGameFindings",
         "url": "https://www.reddit.com/r/FreeGameFindings/.rss",
-        "enabled": true,
+        "enabled": false,
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
@@ -253,7 +253,7 @@
       {
         "name": "Reddit .rss: r/ChatGPT",
         "url": "https://www.reddit.com/r/ChatGPT/.rss",
-        "enabled": true,
+        "enabled": false,
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
@@ -261,7 +261,7 @@
       {
         "name": "Reddit .rss: r/OpenAI",
         "url": "https://www.reddit.com/r/OpenAI/.rss",
-        "enabled": true,
+        "enabled": false,
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
@@ -269,7 +269,7 @@
       {
         "name": "Reddit .rss: r/aws",
         "url": "https://www.reddit.com/r/aws/.rss",
-        "enabled": true,
+        "enabled": false,
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
@@ -277,7 +277,7 @@
       {
         "name": "Reddit .rss: r/SideProject",
         "url": "https://www.reddit.com/r/SideProject/.rss",
-        "enabled": true,
+        "enabled": false,
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
