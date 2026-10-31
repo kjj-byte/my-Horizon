@@ -343,7 +343,7 @@ def test_keywords_only_fetch_returns_items(monkeypatch):
     assert posted["payload"]["source_mode"] == "search"
     assert posted["payload"]["search_query"] == "LLM"
     assert posted["payload"]["search_sort"] == "Latest"
-    assert posted["payload"]["max_items"] == 3  # honors fetch_limit, capped for cost
+    assert posted["payload"]["max_items"] == 100  # below this the actor returns 400
 
 
 def test_missing_token_with_keywords_returns_empty(monkeypatch):

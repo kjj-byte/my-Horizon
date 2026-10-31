@@ -56,7 +56,9 @@ class TwitterScraper(BaseScraper):
 
         items: List[ContentItem] = []
         seen_ids: set[str] = set()
-        max_items = max(1, self.config.fetch_limit)
+        # Apify's scweet actor rejects max_items below its schema minimum; keep 100
+        # per request and bound total cost with _MAX_TOTAL_ITEMS instead.
+        max_items = max(100, self.config.fetch_limit)
         started = time.monotonic()
 
         if users:
