@@ -2,8 +2,10 @@ name: Daily Horizon Summary
 
 on:
   schedule:
-    # GitHub scheduled workflows use UTC. 23:00 UTC is 07:00 Asia/Shanghai (next day).
-    - cron: '0 23 * * *'
+    # Fallback only. 23:40 UTC = 07:40 Asia/Shanghai (next day), non-round to reduce
+    # GitHub's scheduling delay. Primary trigger is the local Windows task at 07:00;
+    # the preflight job below prevents a double run.
+    - cron: '40 23 * * *'
   workflow_dispatch:      # Allow manual trigger
 
 # One run at a time so a manual run never overlaps the scheduled one.
@@ -12,7 +14,37 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      skip: ${{ steps.check.outputs.skip }}
+    steps:
+      - name: Skip if a summary was already published in the last 6 hours
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          WINDOW_HOURS: "6"
+        run: |
+          set -euo pipefail
+          skip=false
+          now=$(date -u +%s)
+          for d in "$(date -u +%F)" "$(date -u -d 'yesterday' +%F)"; do
+            ts=$(gh api "repos/$REPO/commits?path=_posts/$d-summary-zh.md&sha=gh-pages&per_page=1" \
+                 --jq '.[0].commit.committer.date' 2>/dev/null || true)
+            if [ -n "$ts" ] && [ "$ts" != "null" ]; then
+              age_h=$(( (now - $(date -u -d "$ts" +%s)) / 3600 ))
+              echo "$d-summary-zh.md last committed $ts (${age_h}h ago)"
+              if [ "$age_h" -lt "$WINDOW_HOURS" ]; then skip=true; fi
+            fi
+          done
+          echo "skip=$skip" >> "$GITHUB_OUTPUT"
+
   daily-summary:
+    needs: preflight
+    if: needs.preflight.outputs.skip != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 90   # fetch + many AI calls; fail instead of hanging for hours
     permissions:
