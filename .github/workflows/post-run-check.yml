@@ -1,0 +1,108 @@
+name: Post-run Check
+
+# Emails a one-line verdict after the daily run: did it publish, under the right
+# date, and did the dedupe catch the fallback cron? Runs daily at 09:00 Beijing
+# (01:00 UTC) until the CHECK_UNTIL repo variable's date has passed.
+on:
+  schedule:
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      REPO: ${{ github.repository }}
+      EVENT: ${{ github.event_name }}
+      CHECK_UNTIL: ${{ vars.CHECK_UNTIL }}
+      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+    steps:
+      - name: Inspect the last runs and the published post, then email the verdict
+        run: |
+          python3 - <<'PY'
+          import datetime, json, os, smtplib, ssl, subprocess, sys
+          from email.mime.text import MIMEText
+
+          BEIJING = datetime.timezone(datetime.timedelta(hours=8))
+          now = datetime.datetime.now(BEIJING)
+          today = now.strftime("%Y-%m-%d")
+          until = os.environ.get("CHECK_UNTIL", "").strip()
+          if os.environ.get("EVENT") == "schedule" and until and today > until:
+              print(f"CHECK_UNTIL={until} passed (today {today}); nothing to check.")
+              sys.exit(0)
+
+          repo = os.environ["REPO"]
+
+          def gh(path):
+              out = subprocess.run(
+                  ["gh", "api", path],
+                  capture_output=True,
+                  text=True,
+                  encoding="utf-8",
+              )
+              if out.returncode != 0:
+                  return None
+              return json.loads(out.stdout)
+
+          runs = gh(f"repos/{repo}/actions/runs?per_page=50") or {"workflow_runs": []}
+          recent = []
+          for run in runs["workflow_runs"]:
+              if not run["path"].endswith("daily-summary.yml"):
+                  continue
+              created = datetime.datetime.fromisoformat(
+                  run["created_at"].replace("Z", "+00:00"))
+              if now - created <= datetime.timedelta(hours=6):
+                  recent.append(run)
+          recent.sort(key=lambda r: r["created_at"])
+
+          post = gh(f"repos/{repo}/contents/_posts/{today}-summary-zh.md?ref=gh-pages")
+
+          lines, problems = [], []
+          for run in recent:
+              verdict = run["conclusion"] or run["status"]
+              lines.append(f"- {run['event']} @ {run['created_at'][11:16]}Z -> {verdict}")
+          if not recent:
+              problems.append("6 小时内没有 Daily Horizon Summary 运行记录")
+
+          if post is None:
+              problems.append(f"gh-pages 上没有 _posts/{today}-summary-zh.md")
+          else:
+              lines.append(f"- 已发布 _posts/{today}-summary-zh.md（{post['size']} 字节）")
+
+          cron = [r for r in recent if r["event"] == "schedule"]
+          if not cron:
+              lines.append("- 兜底 cron 6 小时内还没排到（GitHub 排队延迟，不算失败）")
+          elif all(r["conclusion"] == "skipped" for r in cron):
+              lines.append("- 兜底 cron 被 preflight 跳过，去重窗口生效")
+          else:
+              lines.append("- 兜底 cron 实际跑了一轮：可能与 07:00 那轮重复")
+              problems.append("cron 没有被去重跳过（窗口或日期判定可能失效）")
+
+          state = "❌ 有问题" if problems else "✅ 正常"
+          body = "\n".join([f"Horizon 跑完自检：{state}", "", *lines, ""])
+          if problems:
+              body += "问题：\n" + "\n".join(f"- {p}" for p in problems) + "\n"
+          body += f"\n运行记录：https://github.com/{repo}/actions\n"
+          print(body)
+
+          pwd = os.environ.get("EMAIL_PASSWORD", "")
+          if not pwd:
+              print("EMAIL_PASSWORD secret is empty; email not sent")
+              sys.exit(1)
+          msg = MIMEText(body, "plain", "utf-8")
+          msg["Subject"] = f"Horizon 自检 {today}：{state}"
+          msg["From"] = "Horizon Daily <2787463114@qq.com>"
+          msg["To"] = "2787463114@qq.com"
+          with smtplib.SMTP_SSL("smtp.qq.com", 465,
+                              context=ssl.create_default_context(), timeout=30) as server:
+              server.login("2787463114@qq.com", pwd)
+              server.send_message(msg)
+          print("SENT to 2787463114@qq.com")
+          sys.exit(1 if problems else 0)
+          PY
