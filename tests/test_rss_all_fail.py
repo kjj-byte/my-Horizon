@@ -26,7 +26,7 @@ def test_all_feeds_failing_raises():
 
 def test_one_feed_working_keeps_result_empty_without_error():
     empty_feed = MagicMock()
-    empty_feed.text = "<rss><channel></channel></rss>"
+    empty_feed.content = b"<rss><channel></channel></rss>"
     empty_feed.raise_for_status.return_value = None
     client = AsyncMock()
     client.get = AsyncMock(side_effect=[httpx.ConnectError("boom"), empty_feed])

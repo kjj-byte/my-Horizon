@@ -24,7 +24,7 @@ _SINCE = datetime(2026, 4, 24, 0, 0, tzinfo=timezone.utc)
 
 def _make_feed_client(feed_text: str) -> AsyncMock:
     response = MagicMock()
-    response.text = feed_text
+    response.content = feed_text.encode("utf-8")
     response.raise_for_status.return_value = None
     client = AsyncMock()
     client.get.return_value = response
@@ -58,6 +58,31 @@ def test_timezone_less_pubdate_is_treated_as_utc() -> None:
     assert items[0].published_at == datetime(
         2026, 4, 24, 12, 0, tzinfo=timezone.utc
     )
+
+
+def test_gbk_feed_titles_are_not_mojibake() -> None:
+    # 52pojie serves GBK without a charset header; parsing text would corrupt it.
+    feed = """<?xml version="1.0" encoding="gbk" ?>
+<rss version="2.0"><channel><title>Test</title>
+  <item>
+    <title>截图软件 轻截 0.6.0</title>
+    <link>https://example.com/gbk</link>
+    <pubDate>Fri, 24 Apr 2026 12:00:00 GMT</pubDate>
+  </item>
+</channel></rss>
+"""
+    response = MagicMock()
+    response.content = feed.encode("gbk")
+    response.raise_for_status.return_value = None
+    client = AsyncMock()
+    client.get.return_value = response
+    scraper = RSSScraper(
+        [RSSSourceConfig(name="GBK", url="https://example.com/gbk.xml")], client
+    )
+
+    items = asyncio.run(scraper.fetch(_SINCE))
+
+    assert items[0].title == "截图软件 轻截 0.6.0"
 
 
 def _make_registry(name: str, extractor):

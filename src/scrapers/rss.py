@@ -102,8 +102,9 @@ class RSSScraper(BaseScraper):
             response = await self.client.get(feed_url, follow_redirects=True)
             response.raise_for_status()
 
-            # Parse feed
-            feed = feedparser.parse(response.text)
+            # Parse the raw bytes: some feeds (e.g. 52pojie) are GBK-declared and would
+            # be mojibake if decoded with httpx's UTF-8 default first.
+            feed = feedparser.parse(response.content)
 
             for entry in feed.entries:
                 # Parse published date

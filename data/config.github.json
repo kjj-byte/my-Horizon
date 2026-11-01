@@ -28,7 +28,7 @@
     "rss": [
       {
         "name": "Google: GPT与AI大模型学生认证及教育优惠",
-        "url": "https://news.google.com/rss/search?q=(ChatGPT+OR+Claude+OR+Gemini+OR+%22GitHub+Student%22+OR+%22Azure+for+Students%22+OR+%22%E5%AD%A6%E7%94%9F%E4%BC%98%E6%83%A0%22+OR+%22%E5%AD%A6%E7%94%9F%E8%AE%A4%E8%AF%81%22)+when:7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+        "url": "https://news.google.com/rss/search?q=(ChatGPT+OR+Claude+OR+Gemini+OR+%22GitHub+Student%22+OR+%22Azure+for+Students%22+OR+%22%E5%AD%A6%E7%94%9F%E4%BC%98%E6%83%A0%22+OR+%22%E5%AD%A6%E7%94%9F%E8%AE%A4%E8%AF%81%22+OR+%22%E6%95%99%E8%82%B2%E9%82%AE%E7%AE%B1%22+OR+%22%E4%BC%81%E4%B8%9A%E9%82%AE%E7%AE%B1%22)+when:7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
         "enabled": true,
         "category": "cloud-perks",
         "content_extractor": null,
@@ -203,6 +203,30 @@
         "profile": "cloud-perks"
       },
       {
+        "name": "52pojie: 精品软件区",
+        "url": "https://www.52pojie.cn/forum.php?mod=rss&fid=16",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "LinuxDo: 最新话题（Cloudflare 托管挑战，httpx 必被 403，需浏览器指纹才通）",
+        "url": "https://linux.do/latest.rss",
+        "enabled": false,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "Google: 什么值得买 优惠/白菜价",
+        "url": "https://news.google.com/rss/search?q=site:smzdm.com+(%E4%BC%98%E6%83%A0+OR+%E7%99%BD%E8%8F%9C+OR+%E5%A5%BD%E4%BB%B7)+when:1d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
         "name": "Product Hunt: 新品发布",
         "url": "https://www.producthunt.com/feed",
         "enabled": true,
@@ -309,6 +333,30 @@
       {
         "name": "GitHub: awesome-free-llm-apis 更新",
         "url": "https://github.com/mnfst/awesome-free-llm-apis/commits/main.atom",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "GitHub: 薅羊毛情报站 wool-gathering（无 RSS，仅数据 commit，开启也无正文）",
+        "url": "https://github.com/jiuyuan233/wool-gathering/commits/main.atom",
+        "enabled": false,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "GitHub: FMHY 免费资源索引 更新",
+        "url": "https://github.com/fmhy/edit/commits/main.atom",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "LootScraper: 限免游戏合集（Steam/Epic/GOG/Amazon）",
+        "url": "https://feed.eikowagenknecht.com/lootscraper.xml",
         "enabled": true,
         "category": "cloud-perks",
         "content_extractor": null,
@@ -547,6 +595,8 @@
         "兑换码",
         "云赠金",
         "学生认证",
+        "教育邮箱",
+        "企业邮箱",
         "免费域名",
         "免费VPS",
         "算力补贴",
@@ -590,7 +640,7 @@
     "gdelt": null,
     "google_news": {
       "enabled": true,
-      "query": "(AI OR Cloud) (学生优惠 OR 兑换码 OR 云赠金 OR 免费试用 OR 免费域名 OR \"free credits\" OR \"promo code\" OR \"student discount\")",
+      "query": "(AI OR Cloud) (学生优惠 OR 教育邮箱 OR 企业邮箱 OR 兑换码 OR 云赠金 OR 免费试用 OR 免费域名 OR \"free credits\" OR \"promo code\" OR \"student discount\")",
       "language": "zh-CN",
       "country": "CN",
       "ceid": "CN:zh-Hans",
