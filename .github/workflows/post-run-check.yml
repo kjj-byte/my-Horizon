@@ -56,8 +56,9 @@ jobs:
               if not run["path"].endswith("daily-summary.yml"):
                   continue
               created = datetime.datetime.fromisoformat(
-                  run["created_at"].replace("Z", "+00:00"))
-              if now - created <= datetime.timedelta(hours=6):
+                  run["created_at"].replace("Z", "+00:00")).astimezone(BEIJING)
+              # Today's runs only: a cron delayed by hours still counts as today's.
+              if created.strftime("%Y-%m-%d") == today:
                   recent.append(run)
           recent.sort(key=lambda r: r["created_at"])
 
@@ -65,10 +66,13 @@ jobs:
 
           lines, problems = [], []
           for run in recent:
+              created = datetime.datetime.fromisoformat(
+                  run["created_at"].replace("Z", "+00:00")).astimezone(BEIJING)
               verdict = run["conclusion"] or run["status"]
-              lines.append(f"- {run['event']} @ {run['created_at'][11:16]}Z -> {verdict}")
+              lines.append(
+                  f"- {run['event']} @ {created.strftime('%H:%M')} 北京 -> {verdict}")
           if not recent:
-              problems.append("6 小时内没有 Daily Horizon Summary 运行记录")
+              problems.append("今天还没有 Daily Horizon Summary 运行记录")
 
           if post is None:
               problems.append(f"gh-pages 上没有 _posts/{today}-summary-zh.md")
