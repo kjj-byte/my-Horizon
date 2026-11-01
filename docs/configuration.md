@@ -68,6 +68,25 @@ Supported styles:
 This setting affects terminal output only. Icons embedded in generated Markdown
 and webhook message content are unchanged.
 
+## Summary Date
+
+`display.timezone` (IANA name, default `UTC`) decides which calendar day a run
+belongs to:
+
+```json
+{
+  "display": {
+    "timezone": "Asia/Shanghai"
+  }
+}
+```
+
+A run at 07:00 Asia/Shanghai happens at 23:00 UTC the day before. With the
+default `UTC`, that run is dated with the previous day; setting the zone names
+the summary, its email subject, and `docs/_posts/<date>-summary-<lang>.md` after
+the local day. Scheduled-run de-duplication in the workflow derives its dates
+from the same zone.
+
 ## Processing Profiles
 
 Profiles define how to evaluate and present content; the runtime configuration

@@ -121,6 +121,7 @@ def test_native_run_raises_when_every_attempted_source_failed(monkeypatch, chann
     orchestrator.config = SimpleNamespace(  # type: ignore[assignment]
         email=None,
         collection=SimpleNamespace(time_window_hours=24),
+        display=SimpleNamespace(timezone="UTC"),
     )
     orchestrator.email_manager = None
     send_failure = AsyncMock()
@@ -149,6 +150,7 @@ def test_native_run_treats_all_success_empty_as_no_content(monkeypatch) -> None:
     orchestrator.config = SimpleNamespace(  # type: ignore[assignment]
         email=None,
         collection=SimpleNamespace(time_window_hours=24),
+        display=SimpleNamespace(timezone="UTC"),
     )
     orchestrator.email_manager = None
     send_failure = AsyncMock()

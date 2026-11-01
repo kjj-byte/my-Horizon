@@ -26,12 +26,15 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
-          WINDOW_HOURS: "6"
+          # GitHub can queue a cron hours late; 12h still covers the 07:00 run
+          # (today's cron landed 7h late and produced a duplicate summary).
+          WINDOW_HOURS: "12"
         run: |
           set -euo pipefail
           skip=false
           now=$(date -u +%s)
-          for d in "$(date -u +%F)" "$(date -u -d 'yesterday' +%F)"; do
+          # Post filenames use display.timezone (Asia/Shanghai), not the runner's UTC day.
+          for d in "$(TZ=Asia/Shanghai date +%F)" "$(TZ=Asia/Shanghai date -d 'yesterday' +%F)"; do
             ts=$(gh api "repos/$REPO/commits?path=_posts/$d-summary-zh.md&sha=gh-pages&per_page=1" \
                  --jq '.[0].commit.committer.date' 2>/dev/null || true)
             if [ -n "$ts" ] && [ "$ts" != "null" ]; then
@@ -44,7 +47,8 @@ jobs:
 
   daily-summary:
     needs: preflight
-    if: needs.preflight.outputs.skip != 'true'
+    # A manual run is a deliberate re-run; only scheduled runs honour the dedupe.
+    if: github.event_name == 'workflow_dispatch' || needs.preflight.outputs.skip != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 90   # fetch + many AI calls; fail instead of hanging for hours
     permissions:
@@ -81,7 +85,7 @@ jobs:
         run: uv run horizon --hours 72
 
       - name: Set current date as environment variable
-        run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+        run: echo "DATE=$(TZ=Asia/Shanghai date +'%Y-%m-%d')" >> $GITHUB_ENV
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

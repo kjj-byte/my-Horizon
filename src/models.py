@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from enum import Enum
 import re
 from typing import Annotated, Literal, Optional, List, Dict, Any, NamedTuple, Union
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from pydantic import BaseModel, ConfigDict, HttpUrl, Field, field_validator
 
 
@@ -579,6 +580,20 @@ class DisplayConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     icon_style: Literal["emoji", "nerd", "ascii"] = "emoji"
+    # Calendar zone for dated output (summary filenames, emails). A 07:00 Beijing
+    # run is still "today" there even though UTC has not rolled over yet.
+    timezone: str = "UTC"
+
+    @field_validator("timezone")
+    @classmethod
+    def validate_timezone(cls, value: str) -> str:
+        try:
+            ZoneInfo(value)
+        except (ZoneInfoNotFoundError, ValueError) as exc:
+            raise ValueError(
+                f"display.timezone must be an IANA timezone name, got {value!r}"
+            ) from exc
+        return value
 
 
 class CollectionConfig(BaseModel):

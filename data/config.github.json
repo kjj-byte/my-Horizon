@@ -692,7 +692,8 @@
     }
   },
   "display": {
-    "icon_style": "emoji"
+    "icon_style": "emoji",
+    "timezone": "Asia/Shanghai"
   },
   "extractors": {},
   "email": {

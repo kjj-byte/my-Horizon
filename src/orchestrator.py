@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Dict, List, Literal, Optional
 from urllib.parse import unquote_plus, urlsplit
+from zoneinfo import ZoneInfo
 import httpx
 from rich.console import Console
 
@@ -41,6 +42,15 @@ def _analysis_succeeded(item: ContentItem) -> bool:
     """True when the item has a usable AI score; a failed analysis leaves score None."""
     processing = item.processing
     return bool(processing and processing.analysis and processing.analysis.score is not None)
+
+
+def _calendar_date(timezone_name: str) -> str:
+    """Today's date in the configured zone, not UTC.
+
+    A 07:00 Beijing run happens at 23:00 UTC the day before; naming the summary
+    after the UTC day would label it with yesterday's date.
+    """
+    return datetime.now(ZoneInfo(timezone_name)).strftime("%Y-%m-%d")
 
 
 def _raise_if_all_analysis_failed(items: List[ContentItem]) -> int:
@@ -323,7 +333,7 @@ class HorizonOrchestrator:
             await self.enrich_items(important_items)
 
             # 7. Generate and save daily summaries for each configured language
-            today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            today = _calendar_date(self.config.display.timezone)
             for lang in self.config.ai.languages:
                 summarizer = DailySummarizer(
                     profile_names=self.profiles.names,
@@ -432,12 +442,12 @@ class HorizonOrchestrator:
             # Send webhook failure notification if configured
             if self.webhook_notifier:
                 await self.webhook_notifier.send_failure(
-                    date=datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                    date=_calendar_date(self.config.display.timezone),
                     error_message=str(e),
                 )
             if self.wechat_notifier:
                 await self.wechat_notifier.send_failure(
-                    date=datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                    date=_calendar_date(self.config.display.timezone),
                     error_message=str(e),
                 )
 
