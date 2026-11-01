@@ -1,0 +1,28 @@
+name: Probe LinuxDo
+on: workflow_dispatch
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: curl default UA
+        run: |
+          echo "== curl default UA (latest.rss)"
+          curl -sS -o /tmp/a.rss -w '%{http_code} %{size_download}\n' https://linux.do/latest.rss || true
+          head -c 200 /tmp/a.rss 2>/dev/null; echo
+          echo "== curl default UA (latest.json)"
+          curl -sS -o /tmp/a.json -w '%{http_code} %{size_download}\n' https://linux.do/latest.json || true
+      - name: httpx client like Horizon
+        run: |
+          pip install -q httpx
+          python - <<'EOF'
+          import httpx
+          for u in ("https://linux.do/latest.rss", "https://linux.do/latest.json"):
+              try:
+                  r = httpx.get(u, timeout=30, follow_redirects=True)
+                  print(u, r.status_code, len(r.content), r.headers.get("content-type"))
+                  if r.status_code != 200:
+                      print("   mitigated:", r.headers.get("cf-mitigated"))
+              except Exception as e:
+                  print(u, "ERR", type(e).__name__, e)
+          EOF
