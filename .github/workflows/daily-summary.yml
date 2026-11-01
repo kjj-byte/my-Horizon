@@ -47,8 +47,9 @@ jobs:
 
   daily-summary:
     needs: preflight
-    # A manual run is a deliberate re-run; only scheduled runs honour the dedupe.
-    if: github.event_name == 'workflow_dispatch' || needs.preflight.outputs.skip != 'true'
+    # Manual runs are deliberate re-runs; scheduled ones honour the dedupe. !cancelled()
+    # keeps a broken preflight from blocking the digest entirely.
+    if: ${{ !cancelled() && (github.event_name == 'workflow_dispatch' || needs.preflight.outputs.skip != 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 90   # fetch + many AI calls; fail instead of hanging for hours
     permissions:
