@@ -211,7 +211,7 @@
         "profile": "cloud-perks"
       },
       {
-        "name": "LinuxDo: 最新话题（Cloudflare 托管挑战，httpx 必被 403，需浏览器指纹才通）",
+        "name": "LinuxDo: 最新话题（CI runner 实测 403 Cloudflare challenge，浏览器 UA 也无效；住宅/云主机 IP 可通）",
         "url": "https://linux.do/latest.rss",
         "enabled": false,
         "category": "cloud-perks",
