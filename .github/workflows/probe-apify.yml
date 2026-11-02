@@ -8,54 +8,40 @@ jobs:
     env:
       APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
     steps:
-      - name: Run the scweet actor with Horizon's exact payload
+      - name: Inspect actor metadata and schema
         run: |
           python3 - <<'PY'
-          import json, os, time, urllib.request
+          import json, os, urllib.request, urllib.error
 
-          token = os.environ.get("APIFY_TOKEN", "")
-          print("token present:", bool(token), "len:", len(token))
+          token = os.environ["APIFY_TOKEN"]
           base = "https://api.apify.com/v2"
           headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
-          def call(method, path, body=None):
-              data = json.dumps(body).encode() if body is not None else None
-              req = urllib.request.Request(base + path, data=data, headers=headers, method=method)
+          def get(path):
+              req = urllib.request.Request(base + path, headers=headers)
               try:
                   with urllib.request.urlopen(req, timeout=60) as r:
-                      return r.status, json.loads(r.read())
+                      return json.loads(r.read())
               except urllib.error.HTTPError as e:
-                  return e.code, e.read()[:600].decode("utf-8", "replace")
+                  return {"err": e.code, "body": e.read()[:400].decode("utf-8", "replace")}
 
-          payload = {
-              "source_mode": "search",
-              "search_query": "free credits",
-              "search_sort": "Latest",
-              "max_items": 100,
-          }
-          status, body = call("POST", "/acts/altimis~scweet/runs", payload)
-          print("start run:", status, str(body)[:400])
-          if status >= 400:
-              raise SystemExit(1)
-          run_id = body["data"]["id"]
-          dataset_id = body["data"]["defaultDatasetId"]
+          meta = get("/acts/altimis~scweet")
+          d = meta.get("data", {})
+          print("title:", d.get("title"), "| modified:", d.get("modifiedAt"), "| isPublic:", d.get("isPublic"))
+          print("exampleRunInput:", json.dumps(d.get("exampleRunInput"), ensure_ascii=False)[:500])
+          print("defaultRunOptions:", json.dumps(d.get("defaultRunOptions"), ensure_ascii=False)[:300])
 
-          for _ in range(40):
-              s, b = call("GET", f"/actor-runs/{run_id}")
-              st = b["data"]["status"] if isinstance(b, dict) else "?"
-              if st in ("SUCCEEDED", "FAILED", "ABORTED", "TIMED-OUT"):
-                  print("run status:", st)
-                  if st != "SUCCEEDED":
-                      print("status message:", str(b)[:600])
-                  break
-              time.sleep(5)
+          build = get("/acts/altimis~scweet/builds/default")
+          b = build.get("data", {})
+          schema = (b.get("inputSchema") or "")
+          print("build number:", b.get("buildNumber"), "| finishedAt:", b.get("finishedAt"))
+          if schema:
+              s = schema if isinstance(schema, str) else json.dumps(schema)
+              print("input schema (first 1200):", s[:1200])
+          else:
+              print("build resp:", json.dumps(build, ensure_ascii=False)[:600])
 
-          s, items = call("GET", f"/datasets/{dataset_id}/items")
-          print("dataset http:", s, "items:", len(items) if isinstance(items, list) else items)
-          if isinstance(items, list) and items:
-              first = items[0]
-              print("first item keys:", sorted(first.keys()))
-              print("sample:", json.dumps(first, ensure_ascii=False)[:800])
-          s, info = call("GET", f"/actor-runs/{run_id}")
-          print("usage:", json.dumps(info["data"].get("usageTotalUsd")) if isinstance(info, dict) else "?")
+          runs = get("/actor-runs?desc=1&limit=5")
+          for r in runs.get("data", {}).get("items", []):
+              print("recent run:", r["id"], r["status"], r["startedAt"], "items?")
           PY
