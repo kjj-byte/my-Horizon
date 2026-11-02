@@ -1,0 +1,32 @@
+name: Sources Probe
+
+# Manual-only: fetches every configured source once and prints per-source and
+# per-feed item counts. No scoring, no publishing, no docs changes.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.26"
+
+      - run: uv sync
+
+      - name: Count items per source
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: uv run python scripts/sources_probe.py
