@@ -1,0 +1,31 @@
+name: YouTube Discover
+
+# Manual-only: searches YouTube for channels/keywords on the perks beat and
+# prints channel frequency + recent titles. Read-only.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.26"
+
+      - run: uv sync
+
+      - name: Discover channels and keywords
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: uv run python scripts/youtube_discover.py
