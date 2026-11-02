@@ -594,259 +594,259 @@
         {
           "channel": "sliverkiss_blog",
           "enabled": true,
-          "fetch_limit": 20,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "AiK2S",
           "enabled": true,
-          "fetch_limit": 20,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "ruyoblog",
           "enabled": true,
-          "fetch_limit": 20,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "linuxdoit",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "nodeloc_rss",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "zhanzhangck",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "pk_oa",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "baipiaofl",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "baipiaotg",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "linux_do_channel",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "linuxdo_tg",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "nodeseekc",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "nodeloc_news",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "hostlocpro",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "bestcheapvpsForHostLoc",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "hstzw",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "xanllu",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "pgkj666",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "deeptech123",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "jdbroo",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "hello_1024",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "liyuans",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "ednovas2",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "tossichannel",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "zuanke8",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "iyangmao",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "freemorebest",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "FuliList",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "shareres",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "infodogge",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "lanren_6688",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "dingyue_center",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "Lx_groups",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "lsmkc",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "SharonNotice",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "ai_news_cn",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         },
         {
           "channel": "vipcloudtg",
           "enabled": true,
-          "fetch_limit": 15,
+          "fetch_limit": 30,
           "category": "cloud-perks",
           "profile": "cloud-perks"
         }
@@ -927,15 +927,39 @@
     "youtube": {
       "enabled": true,
       "api_key_env": "YOUTUBE_API_KEY",
-      "max_results": 25,
-      "max_items": 60,
+      "max_results": 40,
+      "max_items": 100,
       "queries": [
-        {"query": "free API key", "language": "en", "region": "US"},
-        {"query": "free tier cloud", "language": "en", "region": "US"},
-        {"query": "startup credits", "language": "en", "region": "US"},
-        {"query": "免费 API", "language": "zh", "region": "CN"},
-        {"query": "白嫖 API", "language": "zh", "region": "CN"},
-        {"query": "免费额度 云", "language": "zh", "region": "CN"}
+        {
+          "query": "free API key",
+          "language": "en",
+          "region": "US"
+        },
+        {
+          "query": "free tier cloud",
+          "language": "en",
+          "region": "US"
+        },
+        {
+          "query": "startup credits",
+          "language": "en",
+          "region": "US"
+        },
+        {
+          "query": "免费 API",
+          "language": "zh",
+          "region": "CN"
+        },
+        {
+          "query": "白嫖 API",
+          "language": "zh",
+          "region": "CN"
+        },
+        {
+          "query": "免费额度 云",
+          "language": "zh",
+          "region": "CN"
+        }
       ],
       "category": "cloud-perks",
       "profile": "cloud-perks"
