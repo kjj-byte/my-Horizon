@@ -219,15 +219,6 @@
         "profile": "cloud-perks"
       },
       {
-        "name": "Google: 什么值得买 优惠/白菜价",
-        "url": "https://news.google.com/rss/search?q=site%3Asmzdm.com%20%28%E7%BB%9D%E5%AF%B9%E5%80%BC%20OR%20%E6%BC%8F%E6%B4%9E%20OR%20%E5%88%B8%20OR%20%E4%BC%9A%E5%91%98%29%20when%3A1d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
-        "enabled": true,
-        "category": "cloud-perks",
-        "content_extractor": null,
-        "profile": "cloud-perks",
-        "max_items": 25
-      },
-      {
         "name": "Product Hunt: 新品发布",
         "url": "https://www.producthunt.com/feed",
         "enabled": true,
