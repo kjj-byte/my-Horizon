@@ -238,6 +238,22 @@ def test_reply_marked_only_by_leading_mention_is_dropped():
     assert scraper._parse_item(item, now - timedelta(hours=24)) is None
 
 
+@pytest.mark.parametrize(
+    "text",
+    [
+        "https://t.co/ey4TSTblpd",
+        "🔥 https://t.co/abc",
+        "greenone In▬Bermuda▬(Bermuda)▬use▬✦𝖙𝖊𝖒𝖚✦▬coupon▬code",
+    ],
+)
+def test_link_only_and_decorated_spam_is_dropped(text):
+    now = datetime.now(timezone.utc)
+    item = {"id": "3", "createdAt": now.isoformat(), "text": text}
+    scraper = TwitterScraper(_make_config(), http_client=None)
+
+    assert scraper._parse_item(item, now - timedelta(hours=24)) is None
+
+
 def test_playwright_parse_tweet_propagates_profile():
     scraper = TwitterPlaywrightScraper(
         _make_config(profile="playwright-profile"), http_client=None

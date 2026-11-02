@@ -33,6 +33,9 @@ _SPAM = re.compile(
     r"undress|nsfw|nude|porn|onlyfans|casino|betting|usdt|airdrop|"
     r"follow\s*(?:back|me|for)|dm\s*(?:me|for))"
 )
+_URL = re.compile(r"https?://\S+")
+# Link-spam accounts pad tweets with decorative glyphs (▬ Bermuda ▬ coupon ▬).
+_DECOR = re.compile(r"[▬▭■□▪●◆★☆✦✧✪❖◈※]{2,}")
 
 
 class TwitterScraper(BaseScraper):
@@ -365,7 +368,10 @@ class TwitterScraper(BaseScraper):
                 return None
             if item.get("isReply") or item.get("is_reply") or text.startswith("@"):
                 return None
-            if _SPAM.search(text):
+            if _SPAM.search(text) or _DECOR.search(text):
+                return None
+            # Link-only tweets ("https://t.co/…") carry nothing to score.
+            if len(_URL.sub("", text).strip()) < 15:
                 return None
 
             url = item.get("url")
