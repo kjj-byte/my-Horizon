@@ -35,7 +35,17 @@ async def main() -> None:
 
         items = await scraper.fetch(since)
         print(f"fetch_items={len(items)}")
-        for item in items[:3]:
+        terms = [keyword.casefold() for keyword in tw.keywords]
+        matched = sum(
+            1
+            for item in items
+            if any(
+                term in f"{item.title} {item.content or ''}".casefold()
+                for term in terms
+            )
+        )
+        print(f"keyword_match={matched}/{len(items)}")
+        for item in items[:8]:
             print(f"  sample: {item.title[:80]} | {item.published_at.isoformat()}")
 
         # Walk one raw dataset per keyword so "empty dataset" and "parser dropped
