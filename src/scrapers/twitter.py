@@ -103,6 +103,13 @@ class TwitterScraper(BaseScraper):
                 logger.error(f"Keyword search failed for {keyword!r}: {exc}")
 
         logger.info(f"Fetched {len(items)} tweets via Apify.")
+        if not items and keywords:
+            # A silent zero looks exactly like "no news"; make it visible in the run log.
+            logger.warning(
+                "Apify returned 0 usable tweets for %d keywords; "
+                "check the token, credits, and actor output schema.",
+                len(keywords),
+            )
         return items
 
     async def _collect_from_payload(

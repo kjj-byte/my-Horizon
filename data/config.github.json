@@ -156,7 +156,7 @@
       },
       {
         "name": "Google: 注册送 / 免费额度 / 赠金（外贸/开发者）",
-        "url": "https://news.google.com/rss/search?q=(%22free+credits%22+OR+%22sign-up+bonus%22+OR+%22signup+credits%22+OR+%22launch+credits%22+OR+giveaway)+(AI+OR+API+OR+developer+OR+cloud)&hl=en-US&gl=US&ceid=US:en",
+        "url": "https://news.google.com/rss/search?q=%28%22free+credits%22+OR+%22sign-up+bonus%22+OR+%22signup+credits%22+OR+%22launch+credits%22+OR+giveaway%29+%28AI+OR+API+OR+developer+OR+cloud%29+when%3A7d&hl=en-US&gl=US&ceid=US:en",
         "enabled": true,
         "category": "cloud-perks",
         "content_extractor": null,
@@ -164,7 +164,7 @@
       },
       {
         "name": "Google: 送赠金 / 注册送额度（中文）",
-        "url": "https://news.google.com/rss/search?q=(%E9%80%81%E8%B5%A0%E9%87%91+OR+%E6%B3%A8%E5%86%8C%E9%80%81+OR+%E5%85%8D%E8%B4%B9%E9%A2%9D%E5%BA%A6+OR+%E8%B5%A0%E9%80%81%E9%A2%9D%E5%BA%A6+OR+%E6%96%B0%E7%94%A8%E6%88%B7%E7%A6%8F%E5%88%A9)+(AI+OR+%E5%A4%A7%E6%A8%A1%E5%9E%8B+OR+%E4%BA%91)&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+        "url": "https://news.google.com/rss/search?q=%28%E9%80%81%E8%B5%A0%E9%87%91+OR+%E6%B3%A8%E5%86%8C%E9%80%81+OR+%E5%85%8D%E8%B4%B9%E9%A2%9D%E5%BA%A6+OR+%E8%B5%A0%E9%80%81%E9%A2%9D%E5%BA%A6+OR+%E6%96%B0%E7%94%A8%E6%88%B7%E7%A6%8F%E5%88%A9%29+%28AI+OR+%E5%A4%A7%E6%A8%A1%E5%9E%8B+OR+%E4%BA%91%29+when%3A7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
         "enabled": true,
         "category": "cloud-perks",
         "content_extractor": null,
@@ -172,7 +172,7 @@
       },
       {
         "name": "Google: 1024程序员节 / 程序员节 优惠",
-        "url": "https://news.google.com/rss/search?q=(%221024%E7%A8%8B%E5%BA%8F%E5%91%98%E8%8A%82%22+OR+%E7%A8%8B%E5%BA%8F%E5%91%98%E8%8A%82)+(%E4%BC%98%E6%83%A0+OR+%E8%B5%A0%E9%80%81+OR+%E5%85%8D%E8%B4%B9+OR+%E9%A2%9D%E5%BA%A6+OR+%E7%A4%BC%E5%8C%85)&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+        "url": "https://news.google.com/rss/search?q=%28%221024%E7%A8%8B%E5%BA%8F%E5%91%98%E8%8A%82%22+OR+%E7%A8%8B%E5%BA%8F%E5%91%98%E8%8A%82%29+%28%E4%BC%98%E6%83%A0+OR+%E8%B5%A0%E9%80%81+OR+%E5%85%8D%E8%B4%B9+OR+%E9%A2%9D%E5%BA%A6+OR+%E7%A4%BC%E5%8C%85%29+when%3A7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
         "enabled": true,
         "category": "cloud-perks",
         "content_extractor": null,
@@ -180,7 +180,7 @@
       },
       {
         "name": "Google: Agent 平台免费额度 / 赠送（中文）",
-        "url": "https://news.google.com/rss/search?q=(%22AI+Agent%22+OR+%E6%99%BA%E8%83%BD%E4%BD%93+OR+%E6%99%BA%E8%83%BD%E4%BD%93%E5%B9%B3%E5%8F%B0+OR+Agent%E5%B9%B3%E5%8F%B0)+(%E5%85%8D%E8%B4%B9%E9%A2%9D%E5%BA%A6+OR+%E8%B5%A0%E9%80%81+OR+%E5%85%8D%E8%B4%B9%E8%AF%95%E7%94%A8+OR+%E7%AE%97%E5%8A%9B+OR+credits)&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+        "url": "https://news.google.com/rss/search?q=%28%22AI+Agent%22+OR+%E6%99%BA%E8%83%BD%E4%BD%93+OR+%E6%99%BA%E8%83%BD%E4%BD%93%E5%B9%B3%E5%8F%B0+OR+Agent%E5%B9%B3%E5%8F%B0%29+%28%E5%85%8D%E8%B4%B9%E9%A2%9D%E5%BA%A6+OR+%E8%B5%A0%E9%80%81+OR+%E5%85%8D%E8%B4%B9%E8%AF%95%E7%94%A8+OR+%E7%AE%97%E5%8A%9B+OR+credits%29+when%3A7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
         "enabled": true,
         "category": "cloud-perks",
         "content_extractor": null,
@@ -188,7 +188,7 @@
       },
       {
         "name": "Google: Agent platform free credits / giveaway",
-        "url": "https://news.google.com/rss/search?q=(%22agent+platform%22+OR+%22AI+agent%22+OR+%22coding+agent%22)+(%22free+credits%22+OR+%22free+tier%22+OR+credits+OR+giveaway+OR+%22signup+bonus%22)&hl=en-US&gl=US&ceid=US:en",
+        "url": "https://news.google.com/rss/search?q=%28%22agent+platform%22+OR+%22AI+agent%22+OR+%22coding+agent%22%29+%28%22free+credits%22+OR+%22free+tier%22+OR+credits+OR+giveaway+OR+%22signup+bonus%22%29+when%3A7d&hl=en-US&gl=US&ceid=US:en",
         "enabled": true,
         "category": "cloud-perks",
         "content_extractor": null,
@@ -388,15 +388,15 @@
       },
       {
         "name": "Google: 注册机 / 卡bug / 白嫖（AI羊毛）",
-        "url": "https://news.google.com/rss/search?q=%28%E6%B3%A8%E5%86%8C%E6%9C%BA%20OR%20%22%E5%8D%A1bug%22%20OR%20%22bug%E4%BB%B7%22%20OR%20%E7%99%BD%E5%AB%96%29%20%28AI%20OR%20ChatGPT%20OR%20%E4%BC%9A%E5%91%98%20OR%20%E9%A2%9D%E5%BA%A6%20OR%20%E4%BA%91%20OR%20%E8%96%85%29&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+        "url": "https://news.google.com/rss/search?q=%28%E6%B3%A8%E5%86%8C%E6%9C%BA+OR+%22%E5%8D%A1bug%22+OR+%22bug%E4%BB%B7%22+OR+%E7%99%BD%E5%AB%96%29+%28AI+OR+ChatGPT+OR+%E4%BC%9A%E5%91%98+OR+%E9%A2%9D%E5%BA%A6+OR+%E4%BA%91+OR+%E8%96%85%29+when%3A7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
         "enabled": true,
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
       },
       {
-        "name": "Google: 反代 / 反向代理（API 免费）",
-        "url": "https://news.google.com/rss/search?q=%28%E5%8F%8D%E4%BB%A3%20OR%20%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%20OR%20%22API%E5%8F%8D%E4%BB%A3%22%20OR%20%22ChatGPT%E5%8F%8D%E4%BB%A3%22%29%20%28%E5%85%8D%E8%B4%B9%20OR%20%E9%A2%9D%E5%BA%A6%20OR%20API%20OR%20%E4%BC%9A%E5%91%98%29&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+        "name": "Google: 反代 / API中转（免费额度）",
+        "url": "https://news.google.com/rss/search?q=%28%E5%8F%8D%E4%BB%A3%20OR%20%22API%E4%B8%AD%E8%BD%AC%22%20OR%20AI%E4%B8%AD%E8%BD%AC%E7%AB%99%29%20%28%E5%85%8D%E8%B4%B9%20OR%20%E9%A2%9D%E5%BA%A6%29%20when%3A7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
         "enabled": true,
         "category": "cloud-perks",
         "content_extractor": null,
@@ -404,7 +404,7 @@
       },
       {
         "name": "Google(EN): 学生优惠 / 教育折扣",
-        "url": "https://news.google.com/rss/search?q=%28%22student%20discount%22%20OR%20%22free%20for%20students%22%20OR%20%22student%20plan%22%20OR%20%22education%20discount%22%29%20%28ChatGPT%20OR%20Gemini%20OR%20Claude%20OR%20Copilot%20OR%20AI%29&hl=en-US&gl=US&ceid=US:en",
+        "url": "https://news.google.com/rss/search?q=%28%22student+discount%22+OR+%22free+for+students%22+OR+%22student+plan%22+OR+%22education+discount%22%29+%28ChatGPT+OR+Gemini+OR+Claude+OR+Copilot+OR+AI%29+when%3A7d&hl=en-US&gl=US&ceid=US:en",
         "enabled": true,
         "category": "cloud-perks",
         "content_extractor": null,
@@ -412,7 +412,7 @@
       },
       {
         "name": "Google(EN): 兑换码 / 赠品 / giveaway",
-        "url": "https://news.google.com/rss/search?q=%28%22promo%20code%22%20OR%20%22redeem%20code%22%20OR%20giveaway%20OR%20freebie%20OR%20coupon%29%20%28AI%20OR%20API%20OR%20cloud%20OR%20SaaS%29&hl=en-US&gl=US&ceid=US:en",
+        "url": "https://news.google.com/rss/search?q=%28%22promo+code%22+OR+%22redeem+code%22+OR+giveaway+OR+freebie+OR+coupon%29+%28AI+OR+API+OR+cloud+OR+SaaS%29+when%3A7d&hl=en-US&gl=US&ceid=US:en",
         "enabled": true,
         "category": "cloud-perks",
         "content_extractor": null,
@@ -420,7 +420,7 @@
       },
       {
         "name": "Google(EN): 云 / GPU 免费额度",
-        "url": "https://news.google.com/rss/search?q=%28%22free%20credits%22%20OR%20%22free%20tier%22%20OR%20%22GPU%20credits%22%20OR%20%22compute%20credits%22%20OR%20%22startup%20credits%22%29%20%28cloud%20OR%20GPU%20OR%20AI%29&hl=en-US&gl=US&ceid=US:en",
+        "url": "https://news.google.com/rss/search?q=%28%22free+credits%22+OR+%22free+tier%22+OR+%22GPU+credits%22+OR+%22compute+credits%22+OR+%22startup+credits%22%29+%28cloud+OR+GPU+OR+AI%29+when%3A7d&hl=en-US&gl=US&ceid=US:en",
         "enabled": true,
         "category": "cloud-perks",
         "content_extractor": null,
@@ -428,7 +428,7 @@
       },
       {
         "name": "Google(EN): 免费域名 / 建站",
-        "url": "https://news.google.com/rss/search?q=%28%22free%20domain%22%20OR%20%22free%20hosting%22%20OR%20%22free%20SSL%22%20OR%20%22free%20website%22%29&hl=en-US&gl=US&ceid=US:en",
+        "url": "https://news.google.com/rss/search?q=%28%22free+domain%22+OR+%22free+hosting%22+OR+%22free+SSL%22+OR+%22free+website%22%29+when%3A7d&hl=en-US&gl=US&ceid=US:en",
         "enabled": true,
         "category": "cloud-perks",
         "content_extractor": null,
@@ -436,7 +436,7 @@
       },
       {
         "name": "Google(EN): 云抵扣券 / 黑客松",
-        "url": "https://news.google.com/rss/search?q=%28%22cloud%20credits%22%20OR%20%22hackathon%20prize%22%20OR%20%22developer%20grant%22%20OR%20%22free%20API%20credits%22%29&hl=en-US&gl=US&ceid=US:en",
+        "url": "https://news.google.com/rss/search?q=%28%22cloud+credits%22+OR+%22hackathon+prize%22+OR+%22developer+grant%22+OR+%22free+API+credits%22%29+when%3A7d&hl=en-US&gl=US&ceid=US:en",
         "enabled": true,
         "category": "cloud-perks",
         "content_extractor": null,
@@ -444,7 +444,7 @@
       },
       {
         "name": "Google(EN): 反代 / 免费API / keygen",
-        "url": "https://news.google.com/rss/search?q=%28%22reverse%20proxy%22%20OR%20%22free%20API%22%20OR%20%22free%20API%20key%22%20OR%20keygen%20OR%20%22bug%20exploit%22%29%20%28ChatGPT%20OR%20OpenAI%20OR%20Claude%20OR%20LLM%20OR%20subscription%29&hl=en-US&gl=US&ceid=US:en",
+        "url": "https://news.google.com/rss/search?q=%28%22reverse+proxy%22+OR+%22free+API%22+OR+%22free+API+key%22+OR+keygen+OR+%22bug+exploit%22%29+%28ChatGPT+OR+OpenAI+OR+Claude+OR+LLM+OR+subscription%29+when%3A7d&hl=en-US&gl=US&ceid=US:en",
         "enabled": true,
         "category": "cloud-perks",
         "content_extractor": null,
