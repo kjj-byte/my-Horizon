@@ -1,0 +1,65 @@
+name: Probe Analyze
+on: workflow_dispatch
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: |
+          pip install -q uv
+          uv sync
+      - name: Score items from the sources that never show up
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          uv run python - <<'PY'
+          import asyncio, json
+          from datetime import datetime, timezone
+          from pathlib import Path
+          import httpx, feedparser
+          from src.models import Config, ContentItem, SourceType
+          from src.ai.client import create_ai_client
+          from src.ai.analyzer import ContentAnalyzer
+          from src.processing.profiles import ProfileRegistry
+
+          cfg = Config(**json.load(open("data/config.github.json", encoding="utf-8")))
+          registry = ProfileRegistry.load(
+              Path(cfg.processing.profiles_dir), cfg.processing.default_profile
+          )
+          analyzer = ContentAnalyzer(create_ai_client(cfg.ai), registry)
+
+          feeds = {
+              "52pojie": "https://www.52pojie.cn/forum.php?mod=rss&fid=16",
+              "LootScraper": "https://feed.eikowagenknecht.com/lootscraper.xml",
+              "FMHY": "https://github.com/fmhy/edit/commits/main.atom",
+              "free-for-dev": "https://github.com/ripienaar/free-for-dev/commits/master.atom",
+          }
+          items = []
+          now = datetime.now(timezone.utc)
+          with httpx.Client(timeout=30, follow_redirects=True) as client:
+              for name, url in feeds.items():
+                  feed = feedparser.parse(client.get(url).content)
+                  for entry in feed.entries[:2]:
+                      items.append(ContentItem(
+                          id=f"probe:{name}:{entry.get('id', entry.get('link'))}",
+                          source_type=SourceType.RSS,
+                          title=entry.get("title", "untitled"),
+                          url=entry.get("link", url),
+                          content=(entry.get("summary") or "")[:1500],
+                          published_at=now,
+                          profile="cloud-perks",
+                          metadata={"feed_name": name, "category": "cloud-perks"},
+                      ))
+          print(f"items to score: {len(items)}")
+          analyzed = asyncio.run(analyzer.analyze_batch(items))
+          for item in analyzed:
+              analysis = item.processing.analysis if item.processing else None
+              score = analysis.score if analysis else "FAILED"
+              reason = (analysis.reason[:70] if analysis and analysis.reason else "")
+              print(f"SCORE {score} | {item.metadata['feed_name']:12} | {item.title[:60]} | {reason}")
+          PY
