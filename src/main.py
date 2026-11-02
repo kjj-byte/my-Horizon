@@ -14,6 +14,7 @@ from .console_icons import get_icons
 from .logging_config import configure_logging
 from .storage.manager import ConfigError, StorageManager
 from .orchestrator import HorizonOrchestrator
+from .processing.auto_queries import merge_auto_queries
 
 
 console = Console(stderr=True)
@@ -99,6 +100,7 @@ def main():
             sys.exit(1)
 
         icons = get_icons(config.display.icon_style)
+        merge_auto_queries(config, storage.config_path.parent / "auto_queries.json")
 
         # Create and run orchestrator
         orchestrator = HorizonOrchestrator(config, storage, console=console)

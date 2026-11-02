@@ -14,6 +14,7 @@ from typing import Any
 from dotenv import load_dotenv
 
 from ..models import SOURCE_REGISTRY
+from ..processing.auto_queries import merge_auto_queries
 from .errors import HorizonMcpError
 
 
@@ -152,7 +153,9 @@ def load_config(runtime: HorizonRuntime, config_path: Path) -> Any:
         payload = runtime.expand_env_vars(
             json.loads(config_path.read_text(encoding="utf-8"))
         )
-        return runtime.Config.model_validate(payload)
+        config = runtime.Config.model_validate(payload)
+        merge_auto_queries(config, config_path.parent / "auto_queries.json")
+        return config
     except Exception as exc:
         raise HorizonMcpError(
             code="HZ_CONFIG_INVALID",

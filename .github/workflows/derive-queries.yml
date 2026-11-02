@@ -1,0 +1,57 @@
+name: Derive Queries
+
+# Weekly: derive candidate search terms from the last 14 days of published
+# digests, validate their yield, and persist survivors for the daily run.
+on:
+  schedule:
+    - cron: '0 2 * * 1'   # Monday 10:00 Asia/Shanghai
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: derive-queries
+  cancel-in-progress: false
+
+jobs:
+  derive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.26"
+
+      - run: uv sync
+
+      # Digests live on gh-pages, not in main; the daily workflow restores them
+      # the same way before deriving anything.
+      - name: Restore published digests
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth 1 origin gh-pages || { echo "no gh-pages; nothing to derive"; exit 0; }
+          mkdir -p docs
+          git archive origin/gh-pages _posts 2>/dev/null | tar -x -C docs || true
+
+      - name: Derive and apply
+        run: uv run python scripts/derive_queries.py --apply
+
+      - name: Commit auto queries
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain data/auto_queries.json)" ]; then
+            echo "no change"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/auto_queries.json
+          git commit -m "chore(sources): 每周自动派生搜索词"
+          git push
