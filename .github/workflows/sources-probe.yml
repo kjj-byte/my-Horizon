@@ -4,6 +4,11 @@ name: Sources Probe
 # per-feed item counts. No scoring, no publishing, no docs changes.
 on:
   workflow_dispatch:
+    inputs:
+      reddit:
+        description: "Count the Reddit source too (disabled in config)"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -29,4 +34,5 @@ jobs:
         env:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          PROBE_REDDIT: ${{ inputs.reddit && '1' || '' }}
         run: uv run python scripts/sources_probe.py

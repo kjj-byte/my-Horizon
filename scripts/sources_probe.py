@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import os
 from collections import Counter
 from pathlib import Path
 
@@ -14,6 +15,8 @@ async def main() -> None:
     config = Config.model_validate(
         json.loads(Path("data/config.github.json").read_text(encoding="utf-8"))
     )
+    if os.environ.get("PROBE_REDDIT") == "1":
+        config.sources.reddit.enabled = True
     orchestrator = HorizonOrchestrator(config, StorageManager(Path("data")))
     since = orchestrator._determine_time_window()
     print(f"window_hours={config.collection.time_window_hours} since={since.isoformat()}")
