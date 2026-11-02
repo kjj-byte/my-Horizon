@@ -4,11 +4,11 @@ on: workflow_dispatch
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
     env:
       APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
     steps:
-      - name: scweet with dates, then try candidate actors from the store
+      - name: Dump xquik + apidojo schemas and one full item
         run: |
           python3 - <<'PY'
           import json, os, time, urllib.request, urllib.error
@@ -28,47 +28,32 @@ jobs:
               except Exception as e:
                   return {"err": type(e).__name__, "body": str(e)[:200]}
 
-          def run(actor, payload, label):
+          def run(actor, payload):
               res = call("POST", f"/acts/{actor}/runs", payload)
-              if "data" not in res:
-                  print(f"[{label}] start failed: {res}"); return
               rid, did = res["data"]["id"], res["data"]["defaultDatasetId"]
-              st = "?"
               for _ in range(72):
                   info = call("GET", f"/actor-runs/{rid}")
-                  st = info.get("data", {}).get("status")
-                  if st in ("SUCCEEDED", "FAILED", "ABORTED", "TIMED-OUT"):
+                  if info.get("data", {}).get("status") in ("SUCCEEDED", "FAILED", "ABORTED", "TIMED-OUT"):
                       break
                   time.sleep(5)
-              items = call("GET", f"/datasets/{did}/items")
-              n = len(items) if isinstance(items, list) else -1
-              print(f"[{label}] status={st} items={n}")
-              if n > 0:
-                  print("   keys:", sorted(items[0].keys())[:22])
-                  print("   sample:", json.dumps(items[0], ensure_ascii=False)[:260])
+              items = call("GET", f"/datasets/{did}/items?limit=3")
+              return items if isinstance(items, list) else []
 
-          run("altimis~scweet",
-              {"source_mode": "search", "search_query": "AI credits", "search_sort": "Latest",
-               "max_items": 100, "since": "2026-10-30", "until": "2026-11-02"}, "scweet+dates")
+          meta = call("GET", "/acts/xquik~x-tweet-scraper")
+          print("XQUIK example:", json.dumps(meta.get("data", {}).get("exampleRunInput"), ensure_ascii=False)[:800])
+          items = run("xquik~x-tweet-scraper",
+                      {"searchTerms": ["free AI credits"], "maxItems": 100,
+                       "queryType": "Latest + Top", "outputVariant": "rich", "fieldStyle": "camel"})
+          print("XQUIK items:", len(items))
+          if items:
+              it = items[0]
+              print("XQUIK all keys:", sorted(it.keys()))
+              print("XQUIK item:", json.dumps(it, ensure_ascii=False)[:1500])
 
-          for actor in ("xquik~x-tweet-scraper",
-                        "kaitoeasyapi~twitter-x-data-tweet-scraper-pay-per-result-cheapest",
-                        "apidojo~twitter-scraper-lite"):
-              meta = call("GET", f"/acts/{actor}")
-              d = meta.get("data", {})
-              ex = d.get("exampleRunInput") or {}
-              body = ex.get("body")
-              print(f"META {actor}: title={d.get('title','?')[:40]} example={str(body)[:220]}")
-              if not body:
-                  continue
-              try:
-                  payload = json.loads(body) if isinstance(body, str) else body
-              except Exception:
-                  continue
-              replaced = json.dumps(payload).replace("bitcoin", "AI credits")
-              try:
-                  payload = json.loads(replaced)
-              except Exception:
-                  pass
-              run(actor, payload, actor.split("~")[1])
+          items2 = run("apidojo~twitter-scraper-lite",
+                       {"includeSearchTerms": False, "maxItems": 100,
+                        "searchTerms": ["free AI credits"], "sort": "Latest"})
+          print("APIDOJO items:", len(items2))
+          if items2:
+              print("APIDOJO item:", json.dumps(items2[0], ensure_ascii=False)[:1500])
           PY
