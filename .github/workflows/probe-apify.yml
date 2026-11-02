@@ -1,0 +1,61 @@
+name: Probe Apify Twitter
+on: workflow_dispatch
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+    steps:
+      - name: Run the scweet actor with Horizon's exact payload
+        run: |
+          python3 - <<'PY'
+          import json, os, time, urllib.request
+
+          token = os.environ.get("APIFY_TOKEN", "")
+          print("token present:", bool(token), "len:", len(token))
+          base = "https://api.apify.com/v2"
+          headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+
+          def call(method, path, body=None):
+              data = json.dumps(body).encode() if body is not None else None
+              req = urllib.request.Request(base + path, data=data, headers=headers, method=method)
+              try:
+                  with urllib.request.urlopen(req, timeout=60) as r:
+                      return r.status, json.loads(r.read())
+              except urllib.error.HTTPError as e:
+                  return e.code, e.read()[:600].decode("utf-8", "replace")
+
+          payload = {
+              "source_mode": "search",
+              "search_query": "free credits",
+              "search_sort": "Latest",
+              "max_items": 100,
+          }
+          status, body = call("POST", "/acts/altimis~scweet/runs", payload)
+          print("start run:", status, str(body)[:400])
+          if status >= 400:
+              raise SystemExit(1)
+          run_id = body["data"]["id"]
+          dataset_id = body["data"]["defaultDatasetId"]
+
+          for _ in range(40):
+              s, b = call("GET", f"/actor-runs/{run_id}")
+              st = b["data"]["status"] if isinstance(b, dict) else "?"
+              if st in ("SUCCEEDED", "FAILED", "ABORTED", "TIMED-OUT"):
+                  print("run status:", st)
+                  if st != "SUCCEEDED":
+                      print("status message:", str(b)[:600])
+                  break
+              time.sleep(5)
+
+          s, items = call("GET", f"/datasets/{dataset_id}/items")
+          print("dataset http:", s, "items:", len(items) if isinstance(items, list) else items)
+          if isinstance(items, list) and items:
+              first = items[0]
+              print("first item keys:", sorted(first.keys()))
+              print("sample:", json.dumps(first, ensure_ascii=False)[:800])
+          s, info = call("GET", f"/actor-runs/{run_id}")
+          print("usage:", json.dumps(info["data"].get("usageTotalUsd")) if isinstance(info, dict) else "?")
+          PY
