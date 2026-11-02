@@ -54,18 +54,41 @@ def today_runs(runs: list[dict], today: str, zone: ZoneInfo) -> list[dict]:
     return picked
 
 
+def daily_job_conclusion(repo: str, run_id: int) -> str | None:
+    """The daily-summary job's own conclusion, or None when the API says nothing.
+
+    A run whose only job was skipped still reports `conclusion: success` at the
+    workflow level, which makes "did the cron really publish?" unanswerable from
+    the run list alone.
+    """
+    data = gh_json(f"repos/{repo}/actions/runs/{run_id}/jobs")
+    if not data:
+        return None
+    for job in data.get("jobs", []):
+        if job.get("name") == "daily-summary":
+            return job.get("conclusion")
+    return None
+
+
 def verdict(
-    runs: list[dict], post: dict | None, today: str, zone: ZoneInfo
+    runs: list[dict],
+    post: dict | None,
+    today: str,
+    zone: ZoneInfo,
+    cron_jobs: dict[int, str | None] | None = None,
 ) -> tuple[list[str], list[str]]:
     """Return (report lines, problems). Problems make the check fail."""
     lines: list[str] = []
     problems: list[str] = []
+    cron_jobs = cron_jobs or {}
 
     for run in runs:
         created = datetime.datetime.fromisoformat(
             run["created_at"].replace("Z", "+00:00")
         ).astimezone(zone)
         state = run.get("conclusion") or run.get("status")
+        if run["event"] == "schedule" and cron_jobs.get(run["id"]) == "skipped":
+            state = "skipped（去重）"
         lines.append(f"- {run['event']} @ {created.strftime('%H:%M')} 北京 -> {state}")
     if not runs:
         problems.append("今天还没有 Daily Horizon Summary 运行记录")
@@ -78,11 +101,15 @@ def verdict(
     cron = [run for run in runs if run["event"] == "schedule"]
     if not cron:
         lines.append("- 兜底 cron 今天还没排到（GitHub 排队延迟，不算失败）")
-    elif all(run.get("conclusion") == "skipped" for run in cron):
-        lines.append("- 兜底 cron 被 preflight 跳过，去重窗口生效")
     else:
-        lines.append("- 兜底 cron 实际跑了一轮：可能与 07:00 那轮重复")
-        problems.append("cron 没有被去重跳过（窗口或日期判定可能失效）")
+        outcomes = [cron_jobs.get(run["id"]) for run in cron]
+        if all(outcome == "skipped" for outcome in outcomes):
+            lines.append("- 兜底 cron 被 preflight 跳过，去重窗口生效")
+        elif any(outcome in ("success", "failure") for outcome in outcomes):
+            lines.append("- 兜底 cron 实际跑了一轮：可能与 07:00 那轮重复")
+            problems.append("cron 没有被去重跳过（窗口或日期判定可能失效）")
+        else:
+            lines.append("- 无法确认兜底 cron 是跳过还是真跑（job 状态查不到）")
 
     return lines, problems
 
@@ -115,7 +142,13 @@ def main() -> int:
         "workflow_runs", []
     )
     post = gh_json(f"repos/{repo}/contents/_posts/{today}-summary-zh.md?ref=gh-pages")
-    lines, problems = verdict(today_runs(runs, today, zone), post, today, zone)
+    today_list = today_runs(runs, today, zone)
+    cron_jobs = {
+        run["id"]: daily_job_conclusion(repo, run["id"])
+        for run in today_list
+        if run["event"] == "schedule"
+    }
+    lines, problems = verdict(today_list, post, today, zone, cron_jobs)
     body = build_body(lines, problems, repo)
     print(body)
 
