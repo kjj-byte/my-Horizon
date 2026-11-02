@@ -1,0 +1,67 @@
+name: Probe Apify Twitter
+on: workflow_dispatch
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+    steps:
+      - name: Dump scweet schema and try candidate actors
+        run: |
+          python3 - <<'PY'
+          import json, os, time, urllib.request, urllib.error
+
+          token = os.environ["APIFY_TOKEN"]
+          base = "https://api.apify.com/v2"
+          headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+
+          def call(method, path, body=None):
+              data = json.dumps(body).encode() if body is not None else None
+              req = urllib.request.Request(base + path, data=data, headers=headers, method=method)
+              try:
+                  with urllib.request.urlopen(req, timeout=90) as r:
+                      return json.loads(r.read())
+              except urllib.error.HTTPError as e:
+                  return {"err": e.code, "body": e.read()[:300].decode("utf-8", "replace")}
+              except Exception as e:
+                  return {"err": type(e).__name__, "body": str(e)[:200]}
+
+          build = call("GET", "/acts/altimis~scweet/builds/default")
+          schema = build.get("data", {}).get("inputSchema")
+          if isinstance(schema, str):
+              schema = json.loads(schema)
+          print("SCWEET input properties:", sorted((schema or {}).get("properties", {}).keys()))
+
+          def run(actor, payload, label):
+              res = call("POST", f"/acts/{actor}/runs", payload)
+              if "data" not in res:
+                  print(f"[{label}] start failed: {res}"); return
+              rid, did = res["data"]["id"], res["data"]["defaultDatasetId"]
+              for _ in range(60):
+                  info = call("GET", f"/actor-runs/{rid}")
+                  st = info.get("data", {}).get("status")
+                  if st in ("SUCCEEDED", "FAILED", "ABORTED", "TIMED-OUT"):
+                      break
+                  time.sleep(5)
+              items = call("GET", f"/datasets/{did}/items")
+              n = len(items) if isinstance(items, list) else -1
+              print(f"[{label}] {actor} status={st} items={n} run={rid}")
+              if n > 0:
+                  print("   keys:", sorted(items[0].keys())[:25])
+                  print("   sample:", json.dumps(items[0], ensure_ascii=False)[:300])
+
+          for actor, payload, label in [
+              ("apify/twitter-scraper",
+               {"searchTerms": ["AI credits"], "maxItems": 20}, "apify/twitter-scraper"),
+              ("apidojo/twitter-scraper-lite",
+               {"searchTerms": ["AI credits"], "maxItems": 20}, "apidojo-lite"),
+              ("kaitoeasyapi/twitter-x-data-tweet-scraper-pay-per-result-cheapest",
+               {"searchTerms": ["AI credits"], "maxItems": 20}, "kaito"),
+          ]:
+              try:
+                  run(actor, payload, label)
+              except Exception as e:
+                  print(f"[{label}] crashed: {type(e).__name__}: {e}")
+          PY
