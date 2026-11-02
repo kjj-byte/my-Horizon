@@ -27,8 +27,8 @@ class WebSearchTool:
     name = "web_search"
 
     # DuckDuckGo rate-limits silently (empty list) or errors; one retry plus a
-    # second engine turns most CI misses into results.
-    _BACKENDS: tuple[str | None, ...] = (None, "brave", "google")
+    # second engine turns most CI misses into results. Google is the proven fallback.
+    _BACKENDS: tuple[str | None, ...] = (None, "google", "brave")
     _RETRY_DELAY = 0.5
 
     async def execute(self, arguments: dict[str, Any]) -> list[dict[str, str]]:

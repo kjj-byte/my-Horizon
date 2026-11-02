@@ -32,7 +32,7 @@ def test_retries_with_another_backend(monkeypatch):
     results = asyncio.run(WebSearchTool().execute({"query": "free credits"}))
 
     assert [r["url"] for r in results] == ["https://example.com/x"]
-    assert calls == [None, "brave"]
+    assert calls == [None, "google"]
 
 
 def test_empty_result_is_not_reported_as_failure(monkeypatch):
