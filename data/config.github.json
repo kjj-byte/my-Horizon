@@ -647,7 +647,7 @@
       "cookie_file_pattern": "x_cookies_*.json",
       "actor_input": {
         "searchTerms": [
-          "{query}"
+          "{query} -filter:replies -filter:nativeretweets"
         ],
         "maxItems": 30,
         "queryType": "Latest",
