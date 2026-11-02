@@ -127,6 +127,8 @@ jobs:
           # Modify these based on your data/config.github.json provider settings
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+          APIFY_TOKEN_2: ${{ secrets.APIFY_TOKEN_2 }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           HORIZON_WEBHOOK_URL: ${{ secrets.HORIZON_WEBHOOK_URL }}
         run: uv run horizon

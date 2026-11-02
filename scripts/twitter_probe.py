@@ -52,7 +52,13 @@ async def main() -> None:
         # everything" cannot be confused again.
         for keyword in tw.keywords[:2]:
             payload = scraper._build_keyword_payload(keyword, 100)
-            run_id, dataset_id = await scraper._start_run_with_payload(token, payload)
+            try:
+                run_id, dataset_id = await scraper._start_run_with_payload(
+                    token, payload
+                )
+            except Exception as exc:
+                print(f"[{keyword}] start failed: {exc}")
+                continue
             if not run_id or not dataset_id:
                 print(f"[{keyword}] start failed")
                 continue

@@ -968,7 +968,11 @@
         "fieldStyle": "camelCase",
         "outputPreset": "flat",
         "includeSearchTerms": false
-      }
+      },
+      "apify_token_envs": [
+        "APIFY_TOKEN",
+        "APIFY_TOKEN_2"
+      ]
     },
     "openbb": null,
     "ossinsight": {

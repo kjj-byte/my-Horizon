@@ -346,6 +346,9 @@ class TwitterConfig(BaseModel):
     reply_min_likes: int = 0
     # Apify settings (used when mode == "apify")
     apify_token_env: str = "APIFY_TOKEN"
+    # Ordered fallbacks: the next key is only used after the active one runs out
+    # of budget (HTTP 401/402, or a 403 mentioning budget/credit/limit).
+    apify_token_envs: List[str] = Field(default_factory=list)
     actor_id: str = "altimis~scweet"
     # Actor-specific run input; every string containing "{query}" becomes the
     # keyword. Needed when the actor does not accept scweet's input schema.

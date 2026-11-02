@@ -38,12 +38,35 @@ _URL = re.compile(r"https?://\S+")
 _DECOR = re.compile(r"[▬▭■□▪●◆★☆✦✧✪❖◈※]{2,}")
 
 
+class ApifyQuotaError(RuntimeError):
+    """The active Apify token cannot fund another actor run."""
+
+
 class TwitterScraper(BaseScraper):
     """Fetch tweets via the Apify altimis/scweet actor."""
 
     def __init__(self, config: TwitterConfig, http_client: httpx.AsyncClient):
         super().__init__(config, http_client)
         self.config = config
+        self._active_token = 0
+
+    def _token_envs(self) -> List[str]:
+        return list(self.config.apify_token_envs) or [self.config.apify_token_env]
+
+    def _tokens(self) -> List[str]:
+        return [token for token in (os.getenv(name) for name in self._token_envs()) if token]
+
+    def _token(self) -> Optional[str]:
+        tokens = self._tokens()
+        if not tokens:
+            return None
+        return tokens[min(self._active_token, len(tokens) - 1)]
+
+    def _rotate_token(self) -> bool:
+        if self._active_token + 1 >= len(self._tokens()):
+            return False
+        self._active_token += 1
+        return True
 
     @staticmethod
     def _auth(token: str) -> dict:
@@ -60,10 +83,10 @@ class TwitterScraper(BaseScraper):
             logger.debug("No Twitter users or keywords configured, skipping.")
             return []
 
-        token = os.environ.get(self.config.apify_token_env)
+        token = self._token()
         if not token:
             logger.warning(
-                f"Apify token not found in env var '{self.config.apify_token_env}'. Skipping Twitter."
+                "No Apify token in env vars %s. Skipping Twitter.", self._token_envs()
             )
             return []
 
@@ -77,7 +100,6 @@ class TwitterScraper(BaseScraper):
         if users:
             logger.info(f"Fetching Twitter (Apify) for users: {users}")
             await self._collect_from_payload(
-                token,
                 {
                     "source_mode": "profiles",
                     "profile_urls": users,
@@ -101,7 +123,6 @@ class TwitterScraper(BaseScraper):
             logger.info(f"Fetching Twitter (Apify) search for keyword: {keyword}")
             try:
                 await self._collect_from_payload(
-                    token,
                     self._build_keyword_payload(keyword, max_items),
                     since,
                     items,
@@ -134,14 +155,13 @@ class TwitterScraper(BaseScraper):
 
     async def _collect_from_payload(
         self,
-        token: str,
         payload: dict,
         since: datetime,
         items: List[ContentItem],
         seen_ids: set[str],
     ) -> None:
-        run_id, dataset_id = await self._start_run_with_payload(token, payload)
-        if not run_id or not dataset_id:
+        run_id, dataset_id, token = await self._start_run_with_failover(payload)
+        if not run_id or not dataset_id or not token:
             return
         if not await self._wait_for_run(token, run_id):
             return
@@ -153,6 +173,26 @@ class TwitterScraper(BaseScraper):
             if parsed and parsed.id not in seen_ids:
                 seen_ids.add(parsed.id)
                 items.append(parsed)
+
+    async def _start_run_with_failover(
+        self, payload: dict
+    ) -> tuple[Optional[str], Optional[str], Optional[str]]:
+        """Start a run with the active token, falling back when its budget is spent."""
+        for _ in range(max(1, len(self._tokens()))):
+            token = self._token()
+            if not token:
+                return None, None, None
+            try:
+                run_id, dataset_id = await self._start_run_with_payload(token, payload)
+                return run_id, dataset_id, token
+            except ApifyQuotaError as exc:
+                logger.warning(
+                    "Apify token #%d has no budget left (%s)", self._active_token + 1, exc
+                )
+                if not self._rotate_token():
+                    logger.error("All Apify tokens are out of budget; skipping.")
+                    return None, None, None
+        return None, None, None
 
     async def _start_run_with_payload(
         self, token: str, payload: dict
@@ -168,6 +208,16 @@ class TwitterScraper(BaseScraper):
             dataset_id = data["defaultDatasetId"]
             logger.debug(f"Started Apify run {run_id}, dataset {dataset_id}")
             return run_id, dataset_id
+        except httpx.HTTPStatusError as exc:
+            status = exc.response.status_code
+            body = (exc.response.text or "")[:300]
+            if status in (401, 402) or (
+                status == 403
+                and re.search(r"budget|credit|quota|limit|exhaust|payment", body, re.I)
+            ):
+                raise ApifyQuotaError(f"HTTP {status}: {body}") from exc
+            logger.error(f"Failed to start Apify run: {exc}")
+            return None, None
         except Exception as exc:
             logger.error(f"Failed to start Apify run: {exc}")
             return None, None
@@ -211,7 +261,7 @@ class TwitterScraper(BaseScraper):
         if not self.config.fetch_reply_text:
             return []
 
-        token = os.environ.get(self.config.apify_token_env)
+        token = self._token()
         if not token:
             return []
 
@@ -231,8 +281,8 @@ class TwitterScraper(BaseScraper):
             "max_items": max_items,
         }
 
-        run_id, dataset_id = await self._start_run_with_payload(token, payload)
-        if not run_id or not dataset_id:
+        run_id, dataset_id, token = await self._start_run_with_failover(payload)
+        if not run_id or not dataset_id or not token:
             return []
 
         if not await self._wait_for_run(token, run_id):

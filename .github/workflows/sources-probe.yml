@@ -41,6 +41,7 @@ jobs:
       - name: Count items per source
         env:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+          APIFY_TOKEN_2: ${{ secrets.APIFY_TOKEN_2 }}
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
           PROBE_REDDIT: ${{ inputs.reddit && '1' || '' }}
           PROBE_YOUTUBE: ${{ inputs.youtube && '1' || '' }}

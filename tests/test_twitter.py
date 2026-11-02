@@ -747,3 +747,61 @@ def test_fetch_replies_no_conversation_id_returns_empty(monkeypatch):
     assert result == []
 
 
+# ---------------------------------------------------------------------------
+# Apify token failover tests
+# ---------------------------------------------------------------------------
+
+def test_second_token_used_when_first_is_out_of_budget(monkeypatch):
+    monkeypatch.setenv("APIFY_TOKEN", "token-one")
+    monkeypatch.setenv("APIFY_TOKEN_2", "token-two")
+    since = datetime.now(timezone.utc) - timedelta(hours=1)
+    seen = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        auth = request.headers.get("authorization")
+        if request.method == "POST" and "/runs" in request.url.path:
+            seen.append(auth)
+            if auth == "Bearer token-one":
+                return httpx.Response(402, text='{"error":{"message":"insufficient credit"}}')
+            return httpx.Response(200, json=_run_resp())
+        if "/actor-runs/" in request.url.path:
+            return httpx.Response(200, json=_status_resp())
+        if "/datasets/" in request.url.path:
+            return httpx.Response(200, json=[_tweet("t1")])
+        raise AssertionError(f"Unexpected: {request.url}")
+
+    client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+    cfg = _make_config(
+        users=[],
+        keywords=["AI"],
+        apify_token_envs=["APIFY_TOKEN", "APIFY_TOKEN_2"],
+    )
+    result = asyncio.run(TwitterScraper(cfg, client).fetch(since))
+    asyncio.run(client.aclose())
+
+    assert seen == ["Bearer token-one", "Bearer token-two"]
+    assert len(result) == 1
+
+
+def test_all_tokens_out_of_budget_returns_empty(monkeypatch):
+    monkeypatch.setenv("APIFY_TOKEN", "token-one")
+    monkeypatch.setenv("APIFY_TOKEN_2", "token-two")
+    seen = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.method == "POST" and "/runs" in request.url.path:
+            seen.append(request.headers.get("authorization"))
+            return httpx.Response(402, text="no credit")
+        raise AssertionError(f"Unexpected: {request.url}")
+
+    client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+    cfg = _make_config(
+        users=[],
+        keywords=["AI"],
+        apify_token_envs=["APIFY_TOKEN", "APIFY_TOKEN_2"],
+    )
+    result = asyncio.run(TwitterScraper(cfg, client).fetch(datetime.now(timezone.utc)))
+    asyncio.run(client.aclose())
+
+    assert result == []
+    assert seen == ["Bearer token-one", "Bearer token-two"]

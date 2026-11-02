@@ -28,4 +28,5 @@ jobs:
       - name: Probe Twitter source
         env:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+          APIFY_TOKEN_2: ${{ secrets.APIFY_TOKEN_2 }}
         run: uv run python scripts/twitter_probe.py
