@@ -205,7 +205,7 @@
       {
         "name": "52pojie: 精品软件区",
         "url": "https://www.52pojie.cn/forum.php?mod=rss&fid=16",
-        "enabled": true,
+        "enabled": false,
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
@@ -341,7 +341,7 @@
       {
         "name": "GitHub: FMHY 免费资源索引 更新",
         "url": "https://github.com/fmhy/edit/commits/main.atom",
-        "enabled": true,
+        "enabled": false,
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
@@ -349,7 +349,7 @@
       {
         "name": "LootScraper: 限免游戏合集（Steam/Epic/GOG/Amazon）",
         "url": "https://feed.eikowagenknecht.com/lootscraper.xml",
-        "enabled": true,
+        "enabled": false,
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
@@ -365,7 +365,7 @@
       {
         "name": "GitHub: free-ai-credits 50 家厂商免费额度每日核验",
         "url": "https://github.com/yanqingwang/free-ai-credits/commits/main.atom",
-        "enabled": true,
+        "enabled": false,
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
