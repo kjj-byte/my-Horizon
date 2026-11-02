@@ -7,7 +7,14 @@ on:
     # Windows task at 07:00; the preflight job below prevents a double run.
     # This cron is UTC: changing display.timezone also means editing this line.
     - cron: '30 0 * * *'
-  workflow_dispatch:      # Allow manual trigger
+  workflow_dispatch:      # Allow manual trigger; the 07:00 task uses this too
+    inputs:
+      # Manual runs honour the dedupe unless this is set. The scheduled cron must
+      # never see a publish before it, so force stays off by default.
+      force:
+        description: "Skip the 12h dedupe check"
+        type: boolean
+        default: false
 
 # One run at a time so a manual run never overlaps the scheduled one.
 concurrency:
@@ -52,9 +59,9 @@ jobs:
 
   daily-summary:
     needs: preflight
-    # Manual runs are deliberate re-runs; scheduled ones honour the dedupe. !cancelled()
-    # keeps a broken preflight from blocking the digest entirely.
-    if: ${{ !cancelled() && (github.event_name == 'workflow_dispatch' || needs.preflight.outputs.skip != 'true') }}
+    # Every trigger honours the dedupe; only an explicit force=true skips it. The 07:00
+    # task and the cron both must not publish twice if the other one already did.
+    if: ${{ !cancelled() && (inputs.force == true || needs.preflight.outputs.skip != 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 90   # fetch + many AI calls; fail instead of hanging for hours
     permissions:
