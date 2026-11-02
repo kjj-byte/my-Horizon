@@ -649,7 +649,7 @@
         "searchTerms": [
           "{query}"
         ],
-        "maxItems": 100,
+        "maxItems": 30,
         "queryType": "Latest",
         "outputVariant": "rich",
         "fieldStyle": "camelCase",
