@@ -1,0 +1,62 @@
+name: Probe Daily Prep
+on: workflow_dispatch
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Prepare GitHub Actions config
+        env:
+          EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+        run: |
+          set -euo pipefail
+          cp data/config.github.json data/config.json
+          if [ -z "${EMAIL_ADDRESS:-}" ]; then
+            echo "EMAIL_ADDRESS secret is empty; the digest would have no recipient." >&2
+            exit 1
+          fi
+          python3 - "${EMAIL_ADDRESS}" <<'PY'
+          import json, sys
+          address = sys.argv[1]
+          with open("data/config.json", encoding="utf-8") as handle:
+              config = json.load(handle)
+          config["email"]["email_address"] = address
+          config["email"]["smtp_username"] = address
+          with open("data/config.json", "w", encoding="utf-8") as handle:
+              json.dump(config, handle, ensure_ascii=False, indent=2)
+          PY
+
+      - name: Restore recent digests
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth 1 origin gh-pages || { echo "::warning::no gh-pages; repeat filter is off"; exit 0; }
+          mkdir -p docs
+          git archive origin/gh-pages _posts 2>/dev/null | tar -x -C docs || true
+          count=$(ls docs/_posts 2>/dev/null | wc -l)
+          echo "restored $count posts"
+          if [ "$count" -eq 0 ]; then
+            echo "::warning::no posts restored; repeats will not be filtered today"
+          fi
+
+      - name: Assert the run would see what it needs
+        run: |
+          TZ_NAME=$(python3 -c "import json;print(json.load(open('data/config.github.json'))['display']['timezone'])")
+          echo "preflight date: $(TZ="$TZ_NAME" date +%F) / yesterday: $(TZ="$TZ_NAME" date -d 'yesterday' +%F)"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          cfg = json.load(open("data/config.json", encoding="utf-8"))
+          print("email:", cfg["email"]["email_address"])
+          print("tz:", cfg["display"]["timezone"])
+          print("smzdm max_items:", next(s["max_items"] for s in cfg["sources"]["rss"] if s["name"].startswith("Google: 什么值得买")))
+          posts = list(Path("docs/_posts").glob("*-summary-*.md"))
+          print("posts restored:", len(posts))
+          from src.processing.repeat_filter import recent_digest_urls
+          from src.dates import calendar_date
+          from datetime import date
+          today = date.fromisoformat(calendar_date(cfg["display"]["timezone"]))
+          print("repeat-filter urls:", len(recent_digest_urls(Path("docs/_posts"), today)))
+          PY
