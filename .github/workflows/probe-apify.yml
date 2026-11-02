@@ -1,0 +1,48 @@
+name: Probe Apify Twitter
+on: workflow_dispatch
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q httpx pydantic python-dateutil feedparser
+      - name: Measure keep/drop rate on real data
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import asyncio, json, os
+          from datetime import datetime, timedelta, timezone
+          import httpx
+          from src.models import Config
+          from src.scrapers.twitter import TwitterScraper
+
+          cfg = Config(**json.load(open("data/config.github.json", encoding="utf-8")))
+          tw = cfg.sources.twitter
+          since = datetime.now(timezone.utc) - timedelta(hours=72)
+
+          async def main():
+              async with httpx.AsyncClient(timeout=60) as client:
+                  s = TwitterScraper(tw, client)
+                  token = os.environ["APIFY_TOKEN"]
+                  for kw in ("free credits", "学生认证"):
+                      rid, ds = await s._start_run_with_payload(
+                          token, s._build_keyword_payload(kw, 15))
+                      if not await s._wait_for_run(token, rid):
+                          print(f"[{kw}] run failed"); continue
+                      raw = await s._fetch_dataset(token, ds)
+                      kept = [r for r in raw if s._parse_item(r, since)]
+                      dropped = [r for r in raw if not s._parse_item(r, since)]
+                      print(f"[{kw}] raw={len(raw)} kept={len(kept)} dropped={len(dropped)}")
+                      for d in dropped[:6]:
+                          print("   DROP:", (d.get("text") or "")[:70].replace("\n", " "))
+                      for k in kept[:3]:
+                          print("   KEEP:", (k.get("text") or "")[:70].replace("\n", " "))
+
+          asyncio.run(main())
+          PY
