@@ -4,44 +4,55 @@ on: workflow_dispatch
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     env:
       APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
     steps:
-      - name: Inspect actor metadata and schema
+      - name: Try the actor with its own example and another sort
         run: |
           python3 - <<'PY'
-          import json, os, urllib.request, urllib.error
+          import json, os, time, urllib.request, urllib.error
 
           token = os.environ["APIFY_TOKEN"]
           base = "https://api.apify.com/v2"
           headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
-          def get(path):
-              req = urllib.request.Request(base + path, headers=headers)
+          def call(method, path, body=None):
+              data = json.dumps(body).encode() if body is not None else None
+              req = urllib.request.Request(base + path, data=data, headers=headers, method=method)
               try:
-                  with urllib.request.urlopen(req, timeout=60) as r:
+                  with urllib.request.urlopen(req, timeout=90) as r:
                       return json.loads(r.read())
               except urllib.error.HTTPError as e:
-                  return {"err": e.code, "body": e.read()[:400].decode("utf-8", "replace")}
+                  return {"err": e.code, "body": e.read()[:300].decode("utf-8", "replace")}
 
-          meta = get("/acts/altimis~scweet")
-          d = meta.get("data", {})
-          print("title:", d.get("title"), "| modified:", d.get("modifiedAt"), "| isPublic:", d.get("isPublic"))
-          print("exampleRunInput:", json.dumps(d.get("exampleRunInput"), ensure_ascii=False)[:500])
-          print("defaultRunOptions:", json.dumps(d.get("defaultRunOptions"), ensure_ascii=False)[:300])
+          def run(payload, label):
+              res = call("POST", "/acts/altimis~scweet/runs", payload)
+              rid = res["data"]["id"]
+              did = res["data"]["defaultDatasetId"]
+              status = "READY"
+              for _ in range(60):
+                  info = call("GET", f"/actor-runs/{rid}")
+                  status = info["data"]["status"]
+                  if status in ("SUCCEEDED", "FAILED", "ABORTED", "TIMED-OUT"):
+                      break
+                  time.sleep(5)
+              items = call("GET", f"/datasets/{did}/items")
+              n = len(items) if isinstance(items, list) else -1
+              usage = info["data"].get("usageTotalUsd")
+              print(f"[{label}] status={status} items={n} usage={usage} run={rid}")
+              if n > 0:
+                  print("   first keys:", sorted(items[0].keys()))
+                  print("   sample:", json.dumps(items[0], ensure_ascii=False)[:400])
+              elif isinstance(items, list):
+                  print("   empty dataset")
+              return n
 
-          build = get("/acts/altimis~scweet/builds/default")
-          b = build.get("data", {})
-          schema = (b.get("inputSchema") or "")
-          print("build number:", b.get("buildNumber"), "| finishedAt:", b.get("finishedAt"))
-          if schema:
-              s = schema if isinstance(schema, str) else json.dumps(schema)
-              print("input schema (first 1200):", s[:1200])
-          else:
-              print("build resp:", json.dumps(build, ensure_ascii=False)[:600])
-
-          runs = get("/actor-runs?desc=1&limit=5")
-          for r in runs.get("data", {}).get("items", []):
-              print("recent run:", r["id"], r["status"], r["startedAt"], "items?")
+          run({"source_mode": "search", "search_query": "bitcoin",
+               "search_sort": "Latest", "max_items": 1000}, "actor-example")
+          run({"source_mode": "search", "search_query": "AI credits",
+               "search_sort": "Top", "max_items": 20}, "top-sort")
+          run({"source_mode": "search", "search_query": "OpenAI",
+               "search_sort": "Latest", "max_items": 20, "since": "2026-11-01",
+               "until": "2026-11-02"}, "with-dates")
           PY
