@@ -109,7 +109,7 @@
       {
         "name": "YouTube: 全球Free Tier与API开发福利",
         "url": "https://news.google.com/rss/search?q=site:youtube.com+(%22free+cloud+credits%22+OR+%22free+API+keys%22+OR+%22free+VPS%22+OR+%22always+free%22)+when:7d&hl=en-US&gl=US&ceid=US:en",
-        "enabled": true,
+        "enabled": false,
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
@@ -221,7 +221,7 @@
       {
         "name": "Product Hunt: 新品发布",
         "url": "https://www.producthunt.com/feed",
-        "enabled": true,
+        "enabled": false,
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
@@ -229,7 +229,7 @@
       {
         "name": "HN: Show HN",
         "url": "https://hnrss.org/show?points=10",
-        "enabled": true,
+        "enabled": false,
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
@@ -445,7 +445,7 @@
       {
         "name": "IndieGameBundles: 免费游戏（Steam/GOG/IndieGala）",
         "url": "https://www.indiegamebundles.com/feed/",
-        "enabled": true,
+        "enabled": false,
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks",
@@ -683,6 +683,22 @@
       "country": "CN",
       "ceid": "CN:zh-Hans",
       "max_results": 100,
+      "category": "cloud-perks",
+      "profile": "cloud-perks"
+    },
+    "youtube": {
+      "enabled": true,
+      "api_key_env": "YOUTUBE_API_KEY",
+      "max_results": 25,
+      "max_items": 60,
+      "queries": [
+        {"query": "free API key", "language": "en", "region": "US"},
+        {"query": "free tier cloud", "language": "en", "region": "US"},
+        {"query": "startup credits", "language": "en", "region": "US"},
+        {"query": "免费 API", "language": "zh", "region": "CN"},
+        {"query": "白嫖 API", "language": "zh", "region": "CN"},
+        {"query": "免费额度 云", "language": "zh", "region": "CN"}
+      ],
       "category": "cloud-perks",
       "profile": "cloud-perks"
     }
