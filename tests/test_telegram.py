@@ -125,6 +125,66 @@ def test_fetch_channel_uses_alternate_domain_after_dns_failure() -> None:
     assert len(items) == 1
 
 
+def test_parse_message_falls_back_to_permalink_for_invalid_url() -> None:
+    html = """
+    <div class="tgme_widget_message" data-post="channel/7">
+      <div class="tgme_widget_message_text js-message_text">
+        <a href="http://%E6%A0%87%E9%A2%98%2FFurryDNS.com/">link</a> 免费额度
+      </div>
+      <time datetime="2026-07-06T10:00:00+00:00">10:00</time>
+    </div>
+    """
+    msg = BeautifulSoup(html, "html.parser").select_one("div.tgme_widget_message")
+
+    item = _scraper()._parse_message(
+        msg,
+        TelegramChannelConfig(channel="channel"),
+        datetime(2026, 7, 6, 0, 0, tzinfo=timezone.utc),
+    )
+
+    assert item is not None
+    assert str(item.url) == "https://telegram.me/channel/7"
+
+
+def test_fetch_channel_paginates_backwards_until_fetch_limit() -> None:
+    def page(pairs) -> str:
+        return "".join(
+            f'<div class="tgme_widget_message" data-post="channel/{msg_id}">'
+            f'<div class="tgme_widget_message_text js-message_text">msg {msg_id}</div>'
+            f'<time datetime="2026-07-06T{hour:02d}:00:00+00:00">{hour}</time>'
+            "</div>"
+            for msg_id, hour in pairs
+        )
+
+    requested = []
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        requested.append(str(request.url))
+        if request.url.params.get("before"):
+            return httpx.Response(
+                200, text=page([(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)]), request=request
+            )
+        return httpx.Response(
+            200, text=page([(10, 6), (11, 7), (12, 8), (13, 9), (14, 10)]), request=request
+        )
+
+    async def fetch_items():  # type: ignore[no-untyped-def]
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+            scraper = TelegramScraper(
+                TelegramConfig(
+                    channels=[TelegramChannelConfig(channel="channel", fetch_limit=6)]
+                ),
+                client,
+            )
+            return await scraper.fetch(datetime(2026, 7, 6, 0, 0, tzinfo=timezone.utc))
+
+    items = asyncio.run(fetch_items())
+
+    assert len(requested) == 2
+    assert "before=10" in requested[1]
+    assert len(items) == 6
+
+
 def test_fetch_raises_when_all_telegram_endpoints_fail() -> None:
     async def handler(request: httpx.Request) -> httpx.Response:
         raise httpx.ConnectError("Name or service not known", request=request)

@@ -21,6 +21,10 @@ TELEGRAM_WEB_BASES = (
 )
 TELEGRAM_LINK_BASE = "https://telegram.me"
 USER_AGENT = "Mozilla/5.0 (compatible; Horizon/1.0; +https://github.com/thysrael/horizon)"
+# One preview page holds ~20 messages; follow ?before= a few pages back so a
+# busy channel can fill a fetch_limit above 20.
+MAX_PAGES = 4
+MIN_PAGE_MESSAGES = 5
 
 
 class TelegramScraper(BaseScraper):
@@ -58,24 +62,58 @@ class TelegramScraper(BaseScraper):
 
     async def _fetch_channel(self, cfg: TelegramChannelConfig, since: datetime) -> List[ContentItem]:
         headers = {"User-Agent": USER_AGENT}
-        failures = []
+        items: List[ContentItem] = []
+        seen: set[str] = set()
+        before = ""
 
+        for _ in range(MAX_PAGES):
+            html = await self._get_channel_page(cfg.channel, before, headers)
+            soup = BeautifulSoup(html, "html.parser")
+            messages = soup.select("div.tgme_widget_message[data-post]")
+            if not messages:
+                break
+
+            page_items = self._parse_channel_html(html, cfg, since)
+            new_items = [item for item in page_items if item.id not in seen]
+            seen.update(item.id for item in new_items)
+            items.extend(new_items)
+
+            # A short page means the channel has no older history to follow,
+            # even when the page is not yet full of in-window messages.
+            oldest = self._oldest_message(messages[0])
+            if (
+                len(items) >= cfg.fetch_limit
+                or len(messages) < MIN_PAGE_MESSAGES
+                or oldest is None
+                or oldest[1] < since
+                or not new_items
+            ):
+                break
+            before = oldest[0]
+
+        return items[: cfg.fetch_limit]
+
+    async def _get_channel_page(self, channel: str, before: str, headers: dict) -> str:
+        """Fetch one preview page, trying each Telegram web domain in turn."""
+        failures = []
         for web_base in TELEGRAM_WEB_BASES:
-            url = f"{web_base}/{cfg.channel}"
+            url = f"{web_base}/{channel}"
+            if before:
+                url += f"?before={before}"
             try:
                 response = await self.client.get(url, headers=headers, follow_redirects=True, timeout=120.0)
                 if response.status_code == 429:
                     retry_after = int(response.headers.get("Retry-After", 5))
-                    logger.warning("Telegram rate limited for %s, retrying after %ds", cfg.channel, retry_after)
+                    logger.warning("Telegram rate limited for %s, retrying after %ds", channel, retry_after)
                     await asyncio.sleep(retry_after)
                     response = await self.client.get(url, headers=headers, follow_redirects=True, timeout=120.0)
                 response.raise_for_status()
-                return self._parse_channel_html(response.text, cfg, since)
+                return response.text
             except httpx.HTTPError as exc:
                 failures.append(exc)
                 logger.warning(
                     "Telegram request failed for %s via %s: [%s] %r",
-                    cfg.channel,
+                    channel,
                     web_base,
                     type(exc).__name__,
                     exc,
@@ -83,9 +121,22 @@ class TelegramScraper(BaseScraper):
 
         last_failure = failures[-1]
         raise RuntimeError(
-            f"All Telegram endpoints failed for {cfg.channel}: "
+            f"All Telegram endpoints failed for {channel}: "
             f"{type(last_failure).__name__}: {last_failure}"
         ) from last_failure
+
+    @staticmethod
+    def _oldest_message(msg_el) -> Optional[tuple[str, datetime]]:
+        """Return (message id, published_at) for the oldest message on a page."""
+        data_post = msg_el.get("data-post", "")
+        msg_id = data_post.split("/")[-1] if "/" in data_post else data_post
+        time_el = msg_el.select_one("time[datetime]")
+        if not msg_id or not time_el:
+            return None
+        try:
+            return msg_id, datetime.fromisoformat(time_el["datetime"].replace("Z", "+00:00"))
+        except (ValueError, KeyError):
+            return None
 
     def _parse_channel_html(
         self, html: str, cfg: TelegramChannelConfig, since: datetime
@@ -153,17 +204,24 @@ class TelegramScraper(BaseScraper):
                 canonical_url = href
                 break
 
-        return ContentItem(
+        item_fields = dict(
             id=self._generate_id("telegram", channel, msg_id),
             source_type=SourceType.TELEGRAM,
             title=title,
-            url=canonical_url,
             content=text,
             author=channel,
             published_at=published_at,
             profile=cfg.profile,
             metadata={"msg_url": msg_url, "channel": channel, "category": cfg.category},
         )
+        # Percent-encoded IDN links are rejected by the URL type; keep the post
+        # with its Telegram permalink instead of dropping the channel's batch.
+        for url in (canonical_url, msg_url):
+            try:
+                return ContentItem(url=url, **item_fields)
+            except ValueError:
+                continue
+        return None
 
     @staticmethod
     def _make_title(text: str) -> str:
