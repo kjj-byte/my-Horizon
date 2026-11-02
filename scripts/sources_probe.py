@@ -76,6 +76,10 @@ async def main() -> None:
         # One Twitter fetch starts 17 paid Apify runs; keep probes free by default.
         config.sources.twitter.enabled = False
         print("twitter=off (set PROBE_TWITTER=1 to include)")
+    if os.environ.get("PROBE_WEB") != "1" and config.sources.web_lists:
+        # Each listed page costs Crawl4AI credits; keep probes free by default.
+        print("web_lists=off (set PROBE_WEB=1 to include)")
+        config.sources.web_lists = []
     orchestrator = HorizonOrchestrator(config, StorageManager(Path("data")))
     since = orchestrator._determine_time_window()
     print(f"window_hours={config.collection.time_window_hours} since={since.isoformat()}")

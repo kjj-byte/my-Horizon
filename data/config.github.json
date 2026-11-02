@@ -1059,7 +1059,51 @@
       ],
       "category": "cloud-perks",
       "profile": "cloud-perks"
-    }
+    },
+    "web_lists": [
+      {
+        "name": "什么值得买: 免费额度",
+        "url": "https://search.smzdm.com/?c=home&s=%E5%85%8D%E8%B4%B9%E9%A2%9D%E5%BA%A6",
+        "enabled": true,
+        "instruction": "Extract every deal, freebie or benefit listing on this page. Return the title, absolute link, publish date (YYYY-MM-DD) when shown, and a one-sentence summary. Skip ads and navigation.",
+        "max_items": 10,
+        "api_key_env": "CRAWL4AI_API_KEY",
+        "api_key_envs": [
+          "CRAWL4AI_API_KEY",
+          "CRAWL4AI_API_KEY_2"
+        ],
+        "category": "cloud-perks",
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "酷安: 免费",
+        "url": "https://www.coolapk.com/search?q=%E5%85%8D%E8%B4%B9",
+        "enabled": true,
+        "instruction": "Extract every deal, freebie or benefit listing on this page. Return the title, absolute link, publish date (YYYY-MM-DD) when shown, and a one-sentence summary. Skip ads and navigation.",
+        "max_items": 10,
+        "api_key_env": "CRAWL4AI_API_KEY",
+        "api_key_envs": [
+          "CRAWL4AI_API_KEY",
+          "CRAWL4AI_API_KEY_2"
+        ],
+        "category": "cloud-perks",
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "小红书: 免费额度",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E5%85%8D%E8%B4%B9%E9%A2%9D%E5%BA%A6",
+        "enabled": true,
+        "instruction": "Extract every deal, freebie or benefit listing on this page. Return the title, absolute link, publish date (YYYY-MM-DD) when shown, and a one-sentence summary. Skip ads and navigation.",
+        "max_items": 10,
+        "api_key_env": "CRAWL4AI_API_KEY",
+        "api_key_envs": [
+          "CRAWL4AI_API_KEY",
+          "CRAWL4AI_API_KEY_2"
+        ],
+        "category": "cloud-perks",
+        "profile": "cloud-perks"
+      }
+    ]
   },
   "collection": {
     "time_window_hours": 72
@@ -1107,7 +1151,26 @@
     "icon_style": "emoji",
     "timezone": "Asia/Shanghai"
   },
-  "extractors": {},
+  "extractors": {
+    "crawl4ai": {
+      "type": "crawl4ai",
+      "api_key_env": "CRAWL4AI_API_KEY",
+      "api_key_envs": [
+        "CRAWL4AI_API_KEY",
+        "CRAWL4AI_API_KEY_2"
+      ],
+      "max_chars": 20000
+    },
+    "firecrawl": {
+      "type": "firecrawl",
+      "api_key_env": "FIRECRAWL_API_KEY",
+      "api_key_envs": [
+        "FIRECRAWL_API_KEY",
+        "FIRECRAWL_API_KEY_2"
+      ],
+      "max_chars": 20000
+    }
+  },
   "email": {
     "imap_server": "imap.qq.com",
     "imap_port": 993,

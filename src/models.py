@@ -22,6 +22,7 @@ class SourceType(str, Enum):
     GDELT = "gdelt"
     GOOGLE_NEWS = "google_news"
     YOUTUBE = "youtube"
+    WEBLIST = "web_list"
 
 
 class SourceDefinition(NamedTuple):
@@ -44,6 +45,7 @@ SOURCE_REGISTRY = {
     SourceType.GDELT.value: SourceDefinition("gdelt"),
     SourceType.GOOGLE_NEWS.value: SourceDefinition("google_news"),
     SourceType.YOUTUBE.value: SourceDefinition("youtube", item_fields=("queries",)),
+    SourceType.WEBLIST.value: SourceDefinition("web_lists", config_is_list=True),
 }
 
 ProfileRoute = Optional[Union[str, List[str]]]
@@ -255,6 +257,7 @@ class FirecrawlExtractorConfig(BaseModel):
 
     type: Literal[ExtractorType.FIRECRAWL] = ExtractorType.FIRECRAWL
     api_key_env: str = "FIRECRAWL_API_KEY"
+    api_key_envs: List[str] = Field(default_factory=list)
     max_chars: int = Field(default=20000, gt=0)
 
 
@@ -263,6 +266,7 @@ class Crawl4AIExtractorConfig(BaseModel):
 
     type: Literal[ExtractorType.CRAWL4AI] = ExtractorType.CRAWL4AI
     api_key_env: str = "CRAWL4AI_API_KEY"
+    api_key_envs: List[str] = Field(default_factory=list)
     max_chars: int = Field(default=20000, gt=0)
 
 
@@ -500,6 +504,28 @@ class YouTubeConfig(BaseModel):
     profile: ProfileRoute = None
 
 
+class WebListConfig(BaseModel):
+    """One listing page turned into items by Crawl4AI's /extract endpoint.
+
+    Costs credits per call, so this is for sites without RSS (deals, forums,
+    social search pages), not for feeds we already scrape for free.
+    """
+
+    name: str
+    url: HttpUrl
+    enabled: bool = True
+    instruction: str = (
+        "Extract every deal, freebie or benefit listing on this page. "
+        "Return the title, absolute URL, publish date (YYYY-MM-DD) when shown, "
+        "and a one-sentence summary."
+    )
+    max_items: int = Field(default=10, gt=0)
+    api_key_env: str = "CRAWL4AI_API_KEY"
+    api_key_envs: List[str] = Field(default_factory=list)
+    category: Optional[str] = None
+    profile: ProfileRoute = None
+
+
 class SourcesConfig(BaseModel):
     """All sources configuration."""
 
@@ -514,6 +540,7 @@ class SourcesConfig(BaseModel):
     gdelt: Optional[GDELTConfig] = None
     google_news: Optional[GoogleNewsConfig] = None
     youtube: Optional[YouTubeConfig] = None
+    web_lists: List[WebListConfig] = Field(default_factory=list)
 
 
 class WebhookConfig(BaseModel):

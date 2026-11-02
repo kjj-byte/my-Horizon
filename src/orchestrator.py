@@ -29,6 +29,7 @@ from .scrapers.ossinsight import OSSInsightScraper
 from .scrapers.gdelt import GDELTScraper
 from .scrapers.google_news import GoogleNewsScraper
 from .scrapers.youtube import YouTubeScraper
+from .scrapers.web_list import WebListScraper
 from .ai.client import create_ai_client
 from .ai.analyzer import ContentAnalyzer
 from .ai.summarizer import DailySummarizer
@@ -563,6 +564,11 @@ class HorizonOrchestrator:
             if self.config.sources.youtube and self.config.sources.youtube.enabled:
                 yt_scraper = YouTubeScraper(self.config.sources.youtube, client)
                 tasks.append(self._fetch_with_progress("YouTube", yt_scraper, since))
+
+            # Listing pages without RSS (Crawl4AI /extract)
+            if any(cfg.enabled for cfg in self.config.sources.web_lists):
+                web_scraper = WebListScraper(self.config.sources.web_lists, client)
+                tasks.append(self._fetch_with_progress("Web Lists", web_scraper, since))
 
             # Fetch all concurrently
             outcomes = await asyncio.gather(*tasks)

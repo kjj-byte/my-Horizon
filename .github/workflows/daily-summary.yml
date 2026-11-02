@@ -130,7 +130,9 @@ jobs:
           APIFY_TOKEN_2: ${{ secrets.APIFY_TOKEN_2 }}
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
           FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+          FIRECRAWL_API_KEY_2: ${{ secrets.FIRECRAWL_API_KEY_2 }}
           CRAWL4AI_API_KEY: ${{ secrets.CRAWL4AI_API_KEY }}
+          CRAWL4AI_API_KEY_2: ${{ secrets.CRAWL4AI_API_KEY_2 }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           HORIZON_WEBHOOK_URL: ${{ secrets.HORIZON_WEBHOOK_URL }}
         run: uv run horizon
