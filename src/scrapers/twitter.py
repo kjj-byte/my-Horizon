@@ -1,9 +1,10 @@
-"""Twitter scraper using Apify altimis/scweet actor."""
+"""Twitter scraper using an Apify actor (xquik by default, scweet schema supported)."""
 
 import asyncio
 import json
 import logging
 import os
+import re
 import time
 from datetime import datetime, timezone
 from html import unescape
@@ -24,6 +25,14 @@ _MAX_WAIT = 180
 _MAX_FETCH_SECONDS = 45 * 60
 # Hard cap on total tweets collected per run, to bound Apify cost and AI work.
 _MAX_TOTAL_ITEMS = 400
+
+# Promo / follow-for-follow / adult spam that keyword search drags in. Deals rarely
+# match these; the ones that do are not worth the AI call.
+_SPAM = re.compile(
+    r"(?i)(互关|互粉|关注私信|私信领取|招聘|招人|求职|接单|代做|代下|接码|"
+    r"undress|nsfw|nude|porn|onlyfans|casino|betting|usdt|airdrop|"
+    r"follow\s*(?:back|me|for)|dm\s*(?:me|for))"
+)
 
 
 class TwitterScraper(BaseScraper):
@@ -349,6 +358,15 @@ class TwitterScraper(BaseScraper):
             if not text:
                 return None
             text = unescape(text)
+
+            # Keyword search returns quote/retweet/reply noise and promo spam; the
+            # original post is normally captured as well, so drop these.
+            if item.get("isRetweet") or item.get("is_retweet"):
+                return None
+            if item.get("isReply") or item.get("is_reply") or text.startswith("@"):
+                return None
+            if _SPAM.search(text):
+                return None
 
             url = item.get("url")
             if not url:

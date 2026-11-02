@@ -5,6 +5,7 @@ import json
 from datetime import datetime, timedelta, timezone
 
 import httpx
+import pytest
 
 from src.models import TwitterConfig
 from src.scrapers.twitter import TwitterScraper
@@ -198,6 +199,43 @@ def test_parses_camelcase_actor_output():
     assert parsed.title.startswith("@lucifer0xf_:")
     assert parsed.metadata["tweet_id"] == "2117085372589174972"
     assert parsed.metadata["favorite_count"] == 5
+
+
+@pytest.mark.parametrize(
+    "extra, text, reason",
+    [
+        ({"isReply": True}, "free credits for students", "reply"),
+        ({"isRetweet": True}, "free credits for students", "retweet"),
+        ({}, "互关 + 私信领取 免费额度", "follow-for-follow spam"),
+        ({}, "🔥Advanced AI undress with strong realism", "adult spam"),
+        ({}, "招聘前端，薪资面议，免费额度不适用", "job ad"),
+    ],
+)
+def test_noise_tweets_are_dropped(extra, text, reason):
+    now = datetime.now(timezone.utc)
+    item = {
+        "id": "1",
+        "createdAt": now.isoformat(),
+        "text": text,
+        "isReply": False,
+        "isRetweet": False,
+        **extra,
+    }
+    scraper = TwitterScraper(_make_config(), http_client=None)
+
+    assert scraper._parse_item(item, now - timedelta(hours=24)) is None, reason
+
+
+def test_reply_marked_only_by_leading_mention_is_dropped():
+    now = datetime.now(timezone.utc)
+    item = {
+        "id": "2",
+        "createdAt": now.isoformat(),
+        "text": "@someone free credits here",
+    }
+    scraper = TwitterScraper(_make_config(), http_client=None)
+
+    assert scraper._parse_item(item, now - timedelta(hours=24)) is None
 
 
 def test_playwright_parse_tweet_propagates_profile():
