@@ -139,6 +139,67 @@ def test_successful_fetch_returns_items(monkeypatch):
     assert result[0].profile == "twitter-profile"
 
 
+def test_actor_input_template_replaces_query(monkeypatch):
+    """A non-scweet actor gets its own input schema, with {query} substituted."""
+    monkeypatch.setenv("APIFY_TOKEN", "test_token")
+    since = datetime.now(timezone.utc) - timedelta(hours=1)
+    posted = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if "/runs" in request.url.path and request.method == "POST":
+            posted.update(json.loads(request.content))
+            return httpx.Response(200, json=_run_resp())
+        if "/actor-runs/" in request.url.path:
+            return httpx.Response(200, json=_status_resp())
+        if "/datasets/" in request.url.path:
+            return httpx.Response(200, json=[])
+        raise AssertionError(f"Unexpected: {request.url}")
+
+    transport = httpx.MockTransport(handler)
+    client = httpx.AsyncClient(transport=transport)
+    config = _make_config(
+        users=[],
+        keywords=["free credits"],
+        actor_id="xquik~x-tweet-scraper",
+        actor_input={
+            "searchTerms": ["{query}"],
+            "maxItems": 100,
+            "queryType": "Latest",
+            "fieldStyle": "camelCase",
+        },
+    )
+    asyncio.run(TwitterScraper(config, client).fetch(since))
+    asyncio.run(client.aclose())
+
+    assert posted["searchTerms"] == ["free credits"]
+    assert posted["fieldStyle"] == "camelCase"
+    assert "source_mode" not in posted
+
+
+def test_parses_camelcase_actor_output():
+    """Actors like xquik emit createdAt/author.userName instead of legacy keys."""
+    now = datetime.now(timezone.utc)
+    item = {
+        "id": "2117085372589174972",
+        "createdAt": now.isoformat(),
+        "text": "Students get Zed Pro free",
+        "conversationId": "2117085372589174972",
+        "likeCount": 5,
+        "retweetCount": 2,
+        "replyCount": 1,
+        "author": {"userName": "lucifer0xf_", "name": "Lucifer"},
+        "twitterUrl": "https://twitter.com/lucifer0xf_/status/2117085372589174972",
+    }
+    scraper = TwitterScraper(_make_config(), http_client=None)
+
+    parsed = scraper._parse_item(item, now - timedelta(hours=24))
+
+    assert parsed is not None
+    assert parsed.title.startswith("@lucifer0xf_:")
+    assert parsed.metadata["tweet_id"] == "2117085372589174972"
+    assert parsed.metadata["favorite_count"] == 5
+
+
 def test_playwright_parse_tweet_propagates_profile():
     scraper = TwitterPlaywrightScraper(
         _make_config(profile="playwright-profile"), http_client=None

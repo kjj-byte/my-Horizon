@@ -339,6 +339,9 @@ class TwitterConfig(BaseModel):
     # Apify settings (used when mode == "apify")
     apify_token_env: str = "APIFY_TOKEN"
     actor_id: str = "altimis~scweet"
+    # Actor-specific run input; every string containing "{query}" becomes the
+    # keyword. Needed when the actor does not accept scweet's input schema.
+    actor_input: Optional[Dict[str, Any]] = None
     # Playwright settings (used when mode == "playwright")
     cookie_dir: str = "data"
     cookie_file_pattern: str = "x_cookies_*.json"

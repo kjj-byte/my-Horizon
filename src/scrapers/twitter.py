@@ -1,6 +1,7 @@
 """Twitter scraper using Apify altimis/scweet actor."""
 
 import asyncio
+import json
 import logging
 import os
 import time
@@ -89,12 +90,7 @@ class TwitterScraper(BaseScraper):
             try:
                 await self._collect_from_payload(
                     token,
-                    {
-                        "source_mode": "search",
-                        "search_query": keyword,
-                        "search_sort": "Latest",
-                        "max_items": max_items,
-                    },
+                    self._build_keyword_payload(keyword, max_items),
                     since,
                     items,
                     seen_ids,
@@ -111,6 +107,18 @@ class TwitterScraper(BaseScraper):
                 len(keywords),
             )
         return items
+
+    def _build_keyword_payload(self, keyword: str, max_items: int) -> dict:
+        """scweet's schema by default, or the configured actor's own input."""
+        if self.config.actor_input:
+            template = json.dumps(self.config.actor_input)
+            return json.loads(template.replace("{query}", keyword))
+        return {
+            "source_mode": "search",
+            "search_query": keyword,
+            "search_sort": "Latest",
+            "max_items": max_items,
+        }
 
     async def _collect_from_payload(
         self,
@@ -288,7 +296,7 @@ class TwitterScraper(BaseScraper):
 
     def _parse_item(self, item: dict, since: datetime) -> Optional[ContentItem]:
         try:
-            created_at_str = item.get("created_at")
+            created_at_str = item.get("created_at") or item.get("createdAt")
             if not created_at_str:
                 return None
 
@@ -318,22 +326,26 @@ class TwitterScraper(BaseScraper):
             )
             conversation_id = str(
                 item.get("conversation_id")
+                or item.get("conversationId")
                 or item.get("tweet", {}).get("conversation_id")
                 or numeric_id
             )
 
             user = item.get("user") or {}
+            author_user = item.get("author") or {}
             screen_name = (
                 user.get("screen_name")
                 or user.get("username")
                 or user.get("handle")
+                or author_user.get("userName")
                 or item.get("handle")
                 or item.get("username")
+                or item.get("authorUsername")
                 or "unknown"
             )
-            author = user.get("name") or screen_name
+            author = user.get("name") or author_user.get("name") or screen_name
 
-            text = item.get("full_text") or item.get("text") or ""
+            text = item.get("full_text") or item.get("text") or item.get("fullText") or ""
             if not text:
                 return None
             text = unescape(text)
@@ -362,10 +374,10 @@ class TwitterScraper(BaseScraper):
                 metadata={
                     "tweet_id": numeric_id,
                     "conversation_id": conversation_id,
-                    "favorite_count": item.get("favorite_count", 0),
-                    "retweet_count": item.get("retweet_count", 0),
-                    "reply_count": item.get("reply_count", 0),
-                    "view_count": item.get("view_count"),
+                    "favorite_count": item.get("favorite_count", item.get("likeCount", 0)),
+                    "retweet_count": item.get("retweet_count", item.get("retweetCount", 0)),
+                    "reply_count": item.get("reply_count", item.get("replyCount", 0)),
+                    "view_count": item.get("view_count") or item.get("viewCount"),
                     "is_reply": item.get("is_reply", False),
                     "in_reply_to_status_id": item.get("in_reply_to_status_id"),
                     "in_reply_to_screen_name": item.get("in_reply_to_screen_name"),

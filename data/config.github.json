@@ -642,9 +642,20 @@
       "max_tweets_to_expand": 10,
       "reply_min_likes": 0,
       "apify_token_env": "APIFY_TOKEN",
-      "actor_id": "altimis~scweet",
+      "actor_id": "xquik~x-tweet-scraper",
       "cookie_dir": "data",
-      "cookie_file_pattern": "x_cookies_*.json"
+      "cookie_file_pattern": "x_cookies_*.json",
+      "actor_input": {
+        "searchTerms": [
+          "{query}"
+        ],
+        "maxItems": 100,
+        "queryType": "Latest",
+        "outputVariant": "rich",
+        "fieldStyle": "camelCase",
+        "outputPreset": "flat",
+        "includeSearchTerms": false
+      }
     },
     "openbb": null,
     "ossinsight": {
