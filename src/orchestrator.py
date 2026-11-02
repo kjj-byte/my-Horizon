@@ -28,6 +28,7 @@ from .scrapers.openbb import OpenBBScraper
 from .scrapers.ossinsight import OSSInsightScraper
 from .scrapers.gdelt import GDELTScraper
 from .scrapers.google_news import GoogleNewsScraper
+from .scrapers.youtube import YouTubeScraper
 from .ai.client import create_ai_client
 from .ai.analyzer import ContentAnalyzer
 from .ai.summarizer import DailySummarizer
@@ -558,6 +559,11 @@ class HorizonOrchestrator:
                 gn_scraper = GoogleNewsScraper(self.config.sources.google_news, client)
                 tasks.append(self._fetch_with_progress("Google News", gn_scraper, since))
 
+            # YouTube Data API v3 (search by upload date)
+            if self.config.sources.youtube and self.config.sources.youtube.enabled:
+                yt_scraper = YouTubeScraper(self.config.sources.youtube, client)
+                tasks.append(self._fetch_with_progress("YouTube", yt_scraper, since))
+
             # Fetch all concurrently
             outcomes = await asyncio.gather(*tasks)
             self.last_fetch_report = FetchReport(outcomes=list(outcomes))
@@ -630,6 +636,8 @@ class HorizonOrchestrator:
             return meta["source_name"]
         if meta.get("gn_query"):
             return f"google_news:{meta['gn_query']}"
+        if meta.get("yt_query"):
+            return f"youtube:{meta['yt_query']}"
         if meta.get("domain"):
             return meta["domain"]
         return item.author or "unknown"

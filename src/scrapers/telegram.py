@@ -136,6 +136,11 @@ class TelegramScraper(BaseScraper):
         if not text:
             return None
 
+        if cfg.filter_keywords and not any(
+            keyword.casefold() in text.casefold() for keyword in cfg.filter_keywords
+        ):
+            return None
+
         # Generate title from first paragraph
         title = self._make_title(text)
 

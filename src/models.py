@@ -21,6 +21,7 @@ class SourceType(str, Enum):
     OSSINSIGHT = "ossinsight"
     GDELT = "gdelt"
     GOOGLE_NEWS = "google_news"
+    YOUTUBE = "youtube"
 
 
 class SourceDefinition(NamedTuple):
@@ -42,6 +43,7 @@ SOURCE_REGISTRY = {
     SourceType.OSSINSIGHT.value: SourceDefinition("ossinsight"),
     SourceType.GDELT.value: SourceDefinition("gdelt"),
     SourceType.GOOGLE_NEWS.value: SourceDefinition("google_news"),
+    SourceType.YOUTUBE.value: SourceDefinition("youtube", item_fields=("queries",)),
 }
 
 ProfileRoute = Optional[Union[str, List[str]]]
@@ -307,6 +309,9 @@ class TelegramChannelConfig(BaseModel):
     channel: str  # channel username, e.g. "zaihuapd"
     enabled: bool = True
     fetch_limit: int = 20
+    # Keep only messages containing one of these substrings (case-insensitive).
+    # Empty means keep everything; set it on noisy channels to skip AI scoring.
+    filter_keywords: List[str] = Field(default_factory=list)
     category: Optional[str] = None
     profile: ProfileRoute = None
 
@@ -446,6 +451,34 @@ class GoogleNewsConfig(BaseModel):
     profile: ProfileRoute = None
 
 
+class YouTubeQueryConfig(BaseModel):
+    """One YouTube search query."""
+
+    query: str
+    enabled: bool = True
+    language: Optional[str] = None  # relevanceLanguage, e.g. "zh"
+    region: Optional[str] = None  # regionCode, e.g. "CN"
+
+
+class YouTubeConfig(BaseModel):
+    """YouTube Data API v3 search source configuration.
+
+    Searches videos ordered by upload date within the collection window.
+    One search costs 100 quota units of the 10,000/day default; max_results
+    caps how many videos one query returns.
+    """
+
+    enabled: bool = False
+    api_key_env: str = "YOUTUBE_API_KEY"
+    max_results: int = Field(default=20, ge=1, le=50)
+    # Cap on items kept after deduplicating queries, newest first; bounds the
+    # per-item AI analysis this source can trigger in one run.
+    max_items: Optional[int] = Field(default=None, gt=0)
+    queries: List[YouTubeQueryConfig] = Field(default_factory=list)
+    category: Optional[str] = None
+    profile: ProfileRoute = None
+
+
 class SourcesConfig(BaseModel):
     """All sources configuration."""
 
@@ -459,6 +492,7 @@ class SourcesConfig(BaseModel):
     ossinsight: OSSInsightConfig = Field(default_factory=OSSInsightConfig)
     gdelt: Optional[GDELTConfig] = None
     google_news: Optional[GoogleNewsConfig] = None
+    youtube: Optional[YouTubeConfig] = None
 
 
 class WebhookConfig(BaseModel):

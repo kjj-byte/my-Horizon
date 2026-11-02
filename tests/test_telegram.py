@@ -70,6 +70,32 @@ def test_parse_channel_html_keeps_supported_messages() -> None:
     assert items[0].title == "Hello world"
 
 
+def test_parse_channel_html_filters_by_keywords() -> None:
+    html = """
+    <div class="tgme_widget_message" data-post="channel/1">
+      <div class="tgme_widget_message_text js-message_text">Exa 白嫖 70 美刀代金券</div>
+      <time datetime="2026-07-06T10:00:00+00:00">10:00</time>
+    </div>
+    <div class="tgme_widget_message" data-post="channel/2">
+      <div class="tgme_widget_message_text js-message_text">美国 3G 大带宽服务器促销</div>
+      <time datetime="2026-07-06T10:01:00+00:00">10:01</time>
+    </div>
+    <div class="tgme_widget_message" data-post="channel/3">
+      <div class="tgme_widget_message_text js-message_text">FREE API credits</div>
+      <time datetime="2026-07-06T10:02:00+00:00">10:02</time>
+    </div>
+    """
+    cfg = TelegramChannelConfig(channel="channel", filter_keywords=["白嫖", "Free"])
+
+    items = _scraper()._parse_channel_html(
+        html,
+        cfg,
+        datetime(2026, 7, 6, 0, 0, tzinfo=timezone.utc),
+    )
+
+    assert [item.id for item in items] == ["telegram:channel:1", "telegram:channel:3"]
+
+
 def test_fetch_channel_uses_alternate_domain_after_dns_failure() -> None:
     requested_hosts = []
     html = """
