@@ -408,12 +408,17 @@ for validation and fallback rules.
         "url": "https://example.com/feed.xml",
         "enabled": true,
         "category": "ai-ml",
-        "profile": "auto"
+        "profile": "auto",
+        "max_items": 25
       }
     ]
   }
 }
 ```
+
+`max_items` (optional) keeps only the newest N entries of one feed. A deal feed
+that returns 100 items every day costs one AI call per item; capping it is the
+cheapest way to keep the run affordable.
 
 ### Reddit
 

@@ -5,6 +5,7 @@ on:
     # Fallback only. 00:30 UTC = 08:30 Asia/Shanghai, kept 1.5h after the local 07:00
     # task so a longer run (more RSS) does not collide. Primary trigger is the local
     # Windows task at 07:00; the preflight job below prevents a double run.
+    # This cron is UTC: changing display.timezone also means editing this line.
     - cron: '30 0 * * *'
   workflow_dispatch:      # Allow manual trigger
 
@@ -21,20 +22,24 @@ jobs:
     outputs:
       skip: ${{ steps.check.outputs.skip }}
     steps:
-      - name: Skip if a summary was already published in the last 6 hours
+      - name: Checkout config
+        uses: actions/checkout@v6
+
+      - name: Skip if a summary was already published inside the window
         id: check
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           # GitHub can queue a cron hours late; 12h still covers the 07:00 run
-          # (today's cron landed 7h late and produced a duplicate summary).
+          # (a cron landed 7h late and produced a duplicate summary).
           WINDOW_HOURS: "12"
         run: |
           set -euo pipefail
+          # Post filenames use display.timezone, not the runner's UTC day.
+          TZ_NAME=$(python3 -c "import json;print(json.load(open('data/config.github.json'))['display']['timezone'])")
           skip=false
           now=$(date -u +%s)
-          # Post filenames use display.timezone (Asia/Shanghai), not the runner's UTC day.
-          for d in "$(TZ=Asia/Shanghai date +%F)" "$(TZ=Asia/Shanghai date -d 'yesterday' +%F)"; do
+          for d in "$(TZ="$TZ_NAME" date +%F)" "$(TZ="$TZ_NAME" date -d 'yesterday' +%F)"; do
             ts=$(gh api "repos/$REPO/commits?path=_posts/$d-summary-zh.md&sha=gh-pages&per_page=1" \
                  --jq '.[0].commit.committer.date' 2>/dev/null || true)
             if [ -n "$ts" ] && [ "$ts" != "null" ]; then
@@ -73,18 +78,41 @@ jobs:
         run: uv sync
 
       - name: Prepare GitHub Actions config
-        run: cp data/config.github.json data/config.json
+        env:
+          EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+        run: |
+          set -euo pipefail
+          cp data/config.github.json data/config.json
+          # The repo is public: never keep the owner's address in the committed config.
+          if [ -z "${EMAIL_ADDRESS:-}" ]; then
+            echo "EMAIL_ADDRESS secret is empty; the digest would have no recipient." >&2
+            exit 1
+          fi
+          python3 - "${EMAIL_ADDRESS}" <<'PY'
+          import json, sys
+          address = sys.argv[1]
+          with open("data/config.json", encoding="utf-8") as handle:
+              config = json.load(handle)
+          config["email"]["email_address"] = address
+          config["email"]["smtp_username"] = address
+          with open("data/config.json", "w", encoding="utf-8") as handle:
+              json.dump(config, handle, ensure_ascii=False, indent=2)
+          PY
 
-      # Recent published digests are the repeat filter's input: a 72h fetch window
-      # otherwise republishes yesterday's stories today.
+      # Recent published digests feed both the 3-day repeat filter and the
+      # history_search tool; a 72h fetch window otherwise republishes yesterday.
       - name: Restore recent digests
         run: |
           set -euo pipefail
           # No gh-pages yet (first run): the filter just has nothing to compare against.
-          git fetch --no-tags --depth 1 origin gh-pages || { echo "no gh-pages; skipping"; exit 0; }
+          git fetch --no-tags --depth 1 origin gh-pages || { echo "::warning::no gh-pages; repeat filter is off"; exit 0; }
           mkdir -p docs
           git archive origin/gh-pages _posts 2>/dev/null | tar -x -C docs || true
-          ls docs/_posts 2>/dev/null | tail -3 || true
+          count=$(ls docs/_posts 2>/dev/null | wc -l)
+          echo "restored $count posts"
+          if [ "$count" -eq 0 ]; then
+            echo "::warning::no posts restored; repeats will not be filtered today"
+          fi
 
       - name: Run Horizon
         env:
@@ -94,10 +122,12 @@ jobs:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           HORIZON_WEBHOOK_URL: ${{ secrets.HORIZON_WEBHOOK_URL }}
-        run: uv run horizon --hours 72
+        run: uv run horizon
 
       - name: Set current date as environment variable
-        run: echo "DATE=$(TZ=Asia/Shanghai date +'%Y-%m-%d')" >> $GITHUB_ENV
+        run: |
+          TZ_NAME=$(python3 -c "import json;print(json.load(open('data/config.json'))['display']['timezone'])")
+          echo "DATE=$(TZ="$TZ_NAME" date +'%Y-%m-%d')" >> $GITHUB_ENV
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
@@ -109,12 +139,30 @@ jobs:
           publish_branch: gh-pages
           enable_jekyll: true
 
-  # Runs when the daily job fails OR times out (a timeout is a failure).
+  # Runs when the daily job fails OR times out (a timeout is a failure, and the
+  # run is killed before it can send its own failure email).
   notify-failure:
     needs: daily-summary
     if: failure()
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout mailer
+        uses: actions/checkout@v6
+
+      - name: Email the failure
+        env:
+          EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -z "${EMAIL_ADDRESS:-}" ] || [ -z "${EMAIL_PASSWORD:-}" ]; then
+            echo "email secrets not set; skipping notification"
+            exit 0
+          fi
+          python3 scripts/send_mail.py \
+            "Horizon 运行失败 $(date -u +%F)" \
+            "每日任务失败或被超时终止：$RUN_URL"
+
       - name: Post failure notice to webhook (if configured)
         env:
           WEBHOOK: ${{ secrets.HORIZON_WEBHOOK_URL }}

@@ -14,7 +14,9 @@ from urllib.parse import urldefrag
 
 logger = logging.getLogger(__name__)
 
-_FILENAME = re.compile(r"^horizon-(\d{4}-\d{2}-\d{2})(?:-.*)?\.md$")
+_FILENAME = re.compile(
+    r"^(?:horizon-(\d{4}-\d{2}-\d{2})(?:-.*)?|(\d{4}-\d{2}-\d{2})-summary-\w+)\.md$"
+)
 # Older digests use H2 for news; Profile-grouped digests use H3.
 _ITEM = re.compile(
     r"^#{2,3} \[((?:\\.|[^\\\]])+)\]\((https?://\S+)\)[^\n]*\n",
@@ -57,12 +59,12 @@ class HistoryEntry:
 
 def _read_entries(directory: Path) -> list[HistoryEntry]:
     entries = []
-    for path in sorted(directory.glob("horizon-*.md")):
+    for path in sorted(directory.glob("*.md")):
         filename = _FILENAME.fullmatch(path.name)
         if not filename:
             continue
         try:
-            digest_date = date.fromisoformat(filename[1])
+            digest_date = date.fromisoformat(filename[1] or filename[2])
         except ValueError:
             continue
         try:

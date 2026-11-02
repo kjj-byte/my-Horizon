@@ -261,6 +261,9 @@ class RSSSourceConfig(BaseModel):
     category: Optional[str] = None
     content_extractor: Optional[str] = None
     profile: ProfileRoute = None
+    # Keep only the newest N items of this feed; a noisy feed otherwise costs one
+    # AI call per item every day.
+    max_items: Optional[int] = Field(default=None, gt=0)
 
 
 class RedditSubredditConfig(BaseModel):

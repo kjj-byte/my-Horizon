@@ -7,7 +7,6 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Dict, List, Literal, Optional
 from urllib.parse import unquote_plus, urlsplit
-from zoneinfo import ZoneInfo
 import httpx
 from rich.console import Console
 
@@ -34,6 +33,7 @@ from .ai.analyzer import ContentAnalyzer
 from .ai.summarizer import DailySummarizer
 from .ai.enricher import ContentEnricher, EnrichmentBatchResult
 from .ai.tokens import get_usage_snapshot
+from .dates import calendar_date
 from .processing import ProfileRegistry
 from .processing.repeat_filter import (
     REPEAT_DIGEST_DAYS,
@@ -47,15 +47,6 @@ def _analysis_succeeded(item: ContentItem) -> bool:
     """True when the item has a usable AI score; a failed analysis leaves score None."""
     processing = item.processing
     return bool(processing and processing.analysis and processing.analysis.score is not None)
-
-
-def _calendar_date(timezone_name: str) -> str:
-    """Today's date in the configured zone, not UTC.
-
-    A 07:00 Beijing run happens at 23:00 UTC the day before; naming the summary
-    after the UTC day would label it with yesterday's date.
-    """
-    return datetime.now(ZoneInfo(timezone_name)).strftime("%Y-%m-%d")
 
 
 def _raise_if_all_analysis_failed(items: List[ContentItem]) -> int:
@@ -347,7 +338,7 @@ class HorizonOrchestrator:
             await self.enrich_items(important_items)
 
             # 7. Generate and save daily summaries for each configured language
-            today = _calendar_date(self.config.display.timezone)
+            today = calendar_date(self.config.display.timezone)
             for lang in self.config.ai.languages:
                 summarizer = DailySummarizer(
                     profile_names=self.profiles.names,
@@ -456,14 +447,32 @@ class HorizonOrchestrator:
             # Send webhook failure notification if configured
             if self.webhook_notifier:
                 await self.webhook_notifier.send_failure(
-                    date=_calendar_date(self.config.display.timezone),
+                    date=calendar_date(self.config.display.timezone),
                     error_message=str(e),
                 )
             if self.wechat_notifier:
                 await self.wechat_notifier.send_failure(
-                    date=_calendar_date(self.config.display.timezone),
+                    date=calendar_date(self.config.display.timezone),
                     error_message=str(e),
                 )
+            # A failed run must reach the owner: webhook/wechat are usually off.
+            if self.email_manager and self.config.email and self.config.email.enabled:
+                try:
+                    subscribers = self.storage.load_subscribers() or [
+                        self.config.email.email_address
+                    ]
+                    self.email_manager.send_daily_summary(
+                        f"## Horizon 运行失败\n\n`{e}`\n",
+                        f"Horizon 运行失败 - {calendar_date(self.config.display.timezone)}",
+                        subscribers,
+                    )
+                    self.console.print(
+                        f"{self.icons['email']} Sent failure notice by email\n"
+                    )
+                except Exception as mail_error:
+                    self.console.print(
+                        f"[bold red]Could not send failure email: {mail_error}[/bold red]\n"
+                    )
 
             raise
 
@@ -688,7 +697,7 @@ class HorizonOrchestrator:
         """
         seen = recent_digest_urls(
             Path("docs/_posts"),
-            date.fromisoformat(_calendar_date(self.config.display.timezone)),
+            date.fromisoformat(calendar_date(self.config.display.timezone)),
         )
         if not seen:
             return items
@@ -1127,12 +1136,17 @@ class HorizonOrchestrator:
             f"{self.icons['enrich']} Enriching with background knowledge..."
         )
         ai_client = create_ai_client(self.config.ai)
+        # Published digests are restored into docs/_posts in CI; data/summaries is
+        # gitignored there, so preferring it would leave the history tool empty.
+        digests_dir = Path("docs/_posts")
+        if not digests_dir.is_dir():
+            digests_dir = self.storage.summaries_dir
         enricher = ContentEnricher(
             ai_client,
             self.profiles,
             self.config.ai.languages,
             console=self.console,
-            tools=ToolRegistry(self.storage.summaries_dir),
+            tools=ToolRegistry(digests_dir),
         )
         result = await enricher.enrich_batch(items)
         self.console.print(

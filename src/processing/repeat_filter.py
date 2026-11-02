@@ -34,6 +34,12 @@ def recent_digest_urls(
     """
     urls: set[str] = set()
     start = today - timedelta(days=days)
+    if not posts_dir.is_dir():
+        logger.warning(
+            "Repeat filter has no digest directory at %s; repeats are not filtered.",
+            posts_dir,
+        )
+        return urls
     for path in posts_dir.glob("*-summary-*.md"):
         match = _POST_NAME.match(path.name)
         if not match:

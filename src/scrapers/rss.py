@@ -156,6 +156,8 @@ class RSSScraper(BaseScraper):
             self._feed_failures += 1
             logger.warning("Error parsing RSS feed %s: %s", source.name, type(e).__name__)
 
+        if source.max_items:
+            items = items[: source.max_items]
         return items
 
     def _parse_date(self, entry: dict) -> datetime:

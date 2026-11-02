@@ -256,7 +256,9 @@ def test_filter_items_uses_public_filtering_pipeline_api(tmp_path: Path, monkeyp
             SimpleNamespace(
                 runtime=SimpleNamespace(),
                 config_path=tmp_path / "config.json",
-                config=SimpleNamespace(digest=SimpleNamespace()),
+                config=SimpleNamespace(
+                    digest=SimpleNamespace(), display=SimpleNamespace(timezone="UTC")
+                ),
             ),
         ),
     )
@@ -443,7 +445,8 @@ def test_generate_summary_persists_informative_empty_summary(
             SimpleNamespace(
                 runtime=SimpleNamespace(DailySummarizer=RecordingSummarizer),
                 config=SimpleNamespace(
-                    digest=SimpleNamespace(profile_order=profile_order)
+                    digest=SimpleNamespace(profile_order=profile_order),
+                    display=SimpleNamespace(timezone="UTC"),
                 ),
             ),
             [],

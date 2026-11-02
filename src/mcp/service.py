@@ -12,6 +12,7 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from rich.console import Console
 
+from ..dates import calendar_date
 from ..processing import ProfileRegistry
 from .errors import HorizonMcpError
 from .horizon_adapter import (
@@ -552,7 +553,7 @@ class HorizonPipelineService:
         )
 
         total_fetched = self._total_fetched(run_id, fallback=len(items))
-        date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        date_str = calendar_date(ctx.config.display.timezone)
 
         summarizer = ctx.runtime.DailySummarizer(
             profile_names=self._profiles(ctx).names,

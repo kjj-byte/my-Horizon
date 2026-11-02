@@ -220,11 +220,12 @@
       },
       {
         "name": "Google: 什么值得买 优惠/白菜价",
-        "url": "https://news.google.com/rss/search?q=site:smzdm.com+(%E4%BC%98%E6%83%A0+OR+%E7%99%BD%E8%8F%9C+OR+%E5%A5%BD%E4%BB%B7)+when:1d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+        "url": "https://news.google.com/rss/search?q=site%3Asmzdm.com%20%28%E7%BB%9D%E5%AF%B9%E5%80%BC%20OR%20%E6%BC%8F%E6%B4%9E%20OR%20%E5%88%B8%20OR%20%E4%BC%9A%E5%91%98%29%20when%3A1d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
         "enabled": true,
         "category": "cloud-perks",
         "content_extractor": null,
-        "profile": "cloud-perks"
+        "profile": "cloud-perks",
+        "max_items": 25
       },
       {
         "name": "Product Hunt: 新品发布",
@@ -730,8 +731,8 @@
     "imap_enabled": false,
     "smtp_server": "smtp.qq.com",
     "smtp_port": 465,
-    "smtp_username": "2787463114@qq.com",
-    "email_address": "2787463114@qq.com",
+    "smtp_username": "horizon@example.com",
+    "email_address": "horizon@example.com",
     "password_env": "EMAIL_PASSWORD",
     "sender_name": "Horizon Daily",
     "subscribe_keyword": "SUBSCRIBE",
@@ -740,30 +741,6 @@
   },
   "webhook": {
     "url_env": "HORIZON_WEBHOOK_URL",
-    "request_body": {
-      "msg_type": "interactive",
-      "card": {
-        "schema": "2.0",
-        "config": {
-          "wide_screen_mode": true
-        },
-        "header": {
-          "title": {
-            "tag": "plain_text",
-            "content": "#{message_title}"
-          },
-          "template": "blue"
-        },
-        "body": {
-          "elements": [
-            {
-              "tag": "markdown",
-              "content": "#{summary}"
-            }
-          ]
-        }
-      }
-    },
     "headers": "",
     "delivery": "summary_and_items",
     "overview_position": "last",

@@ -117,6 +117,19 @@ def test_dates_come_from_filename_and_current_or_future_digests_are_excluded(tmp
     assert [entry["url"] for entry in results] == ["https://example.com/2026-04-01"]
 
 
+def test_reads_published_posts_with_jekyll_front_matter(tmp_path):
+    """CI restores gh-pages _posts, so the tool must accept that naming."""
+    (tmp_path / "2026-04-01-summary-zh.md").write_text(
+        "---\nlayout: default\ntitle: \"Horizon Summary: 2026-04-01 (ZH)\"\n---\n\n"
+        + story("Atlas release", "Atlas release notes."),
+        encoding="utf-8",
+    )
+
+    results = search(HistorySearchTool(tmp_path), "Atlas")
+
+    assert [entry["url"] for entry in results] == ["https://example.com/story"]
+
+
 def test_can_extend_history_window(tmp_path):
     (tmp_path / "horizon-2025-11-01.md").write_text(story("Atlas", "Atlas preview."), encoding="utf-8")
     tool = HistorySearchTool(tmp_path)
