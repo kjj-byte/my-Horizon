@@ -72,6 +72,10 @@ async def main() -> None:
     )
     if os.environ.get("PROBE_REDDIT") == "1":
         config.sources.reddit.enabled = True
+    if os.environ.get("PROBE_TWITTER") != "1" and config.sources.twitter:
+        # One Twitter fetch starts 17 paid Apify runs; keep probes free by default.
+        config.sources.twitter.enabled = False
+        print("twitter=off (set PROBE_TWITTER=1 to include)")
     orchestrator = HorizonOrchestrator(config, StorageManager(Path("data")))
     since = orchestrator._determine_time_window()
     print(f"window_hours={config.collection.time_window_hours} since={since.isoformat()}")
