@@ -370,8 +370,9 @@ class TwitterScraper(BaseScraper):
                 return None
             if _SPAM.search(text) or _DECOR.search(text):
                 return None
-            # Link-only tweets ("https://t.co/…") carry nothing to score.
-            if len(_URL.sub("", text).strip()) < 15:
+            # Link-only tweets ("https://t.co/…") carry nothing to score. Keep the
+            # threshold low: a short deal tweet is still a deal.
+            if len(_URL.sub("", text).strip()) < 8:
                 return None
 
             url = item.get("url")
