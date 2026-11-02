@@ -240,6 +240,8 @@ class HackerNewsConfig(BaseModel):
 
 class ExtractorType(str, Enum):
     TRAFILATURA = "trafilatura"
+    FIRECRAWL = "firecrawl"
+    CRAWL4AI = "crawl4ai"
 
 
 class TrafilaturaExtractorConfig(BaseModel):
@@ -248,8 +250,24 @@ class TrafilaturaExtractorConfig(BaseModel):
     favor_recall: bool = False
 
 
+class FirecrawlExtractorConfig(BaseModel):
+    """Hosted page-to-markdown (free: ~500 pages/month)."""
+
+    type: Literal[ExtractorType.FIRECRAWL] = ExtractorType.FIRECRAWL
+    api_key_env: str = "FIRECRAWL_API_KEY"
+    max_chars: int = Field(default=20000, gt=0)
+
+
+class Crawl4AIExtractorConfig(BaseModel):
+    """Hosted scrape endpoint (free: 1,000 credits/month, ~1 per page)."""
+
+    type: Literal[ExtractorType.CRAWL4AI] = ExtractorType.CRAWL4AI
+    api_key_env: str = "CRAWL4AI_API_KEY"
+    max_chars: int = Field(default=20000, gt=0)
+
+
 ExtractorConfig = Annotated[
-    Union[TrafilaturaExtractorConfig],
+    Union[TrafilaturaExtractorConfig, FirecrawlExtractorConfig, Crawl4AIExtractorConfig],
     Field(discriminator="type"),
 ]
 
