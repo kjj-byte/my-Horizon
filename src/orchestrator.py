@@ -3,7 +3,7 @@
 import asyncio
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Dict, List, Literal, Optional
 from urllib.parse import unquote_plus, urlsplit
@@ -35,6 +35,11 @@ from .ai.summarizer import DailySummarizer
 from .ai.enricher import ContentEnricher, EnrichmentBatchResult
 from .ai.tokens import get_usage_snapshot
 from .processing import ProfileRegistry
+from .processing.repeat_filter import (
+    REPEAT_DIGEST_DAYS,
+    digest_url_key,
+    recent_digest_urls,
+)
 from .processing.tools import ToolRegistry
 
 
@@ -308,7 +313,16 @@ class HorizonOrchestrator:
                     f"→ {len(merged_items)} unique items\n"
                 )
 
-            # 4. Analyze with AI
+            # 4. Drop items already published in the last few digests
+            merged_items = self.drop_recent_digests(merged_items)
+            if not merged_items:
+                self.console.print(
+                    f"[yellow]Every fetched item was already published in the last "
+                    f"{REPEAT_DIGEST_DAYS} digests. Exiting.[/yellow]"
+                )
+                return
+
+            # 5. Analyze with AI
             analyzed_items = await self.analyze_items(merged_items)
             self.console.print(
                 f"{self.icons['ai']} Analyzed {len(analyzed_items)} items with AI\n"
@@ -339,7 +353,7 @@ class HorizonOrchestrator:
                     profile_names=self.profiles.names,
                     profile_order=self.config.digest.profile_order,
                 )
-                summary = await summarizer.generate_summary(important_items, today, len(all_items), language=lang)
+                summary = await summarizer.generate_summary(important_items, today, len(merged_items), language=lang)
 
                 # Save to data/summaries/
                 summary_path = self.storage.save_daily_summary(today, summary, language=lang)
@@ -665,6 +679,27 @@ class HorizonOrchestrator:
             merged.append(primary)
 
         return merged
+
+    def drop_recent_digests(self, items: List[ContentItem]) -> List[ContentItem]:
+        """Drop items whose link already appeared in the previous daily digests.
+
+        The fetch window is 72h, so yesterday's stories would otherwise be
+        fetched and published again today.
+        """
+        seen = recent_digest_urls(
+            Path("docs/_posts"),
+            date.fromisoformat(_calendar_date(self.config.display.timezone)),
+        )
+        if not seen:
+            return items
+        kept = [item for item in items if digest_url_key(str(item.url)) not in seen]
+        dropped = len(items) - len(kept)
+        if dropped:
+            self.console.print(
+                f"{self.icons['cleanup']} Dropped {dropped} items already published in "
+                f"the last {REPEAT_DIGEST_DAYS} digests\n"
+            )
+        return kept
 
     async def merge_topic_duplicates(
         self,

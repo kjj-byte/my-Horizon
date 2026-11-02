@@ -75,6 +75,16 @@ jobs:
       - name: Prepare GitHub Actions config
         run: cp data/config.github.json data/config.json
 
+      # Recent published digests are the repeat filter's input: a 72h fetch window
+      # otherwise republishes yesterday's stories today.
+      - name: Restore recent digests
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth 1 origin gh-pages
+          mkdir -p docs
+          git archive origin/gh-pages _posts | tar -x -C docs
+          ls docs/_posts | tail -3
+
       - name: Run Horizon
         env:
           # Map secrets to environment variables expected by config.json

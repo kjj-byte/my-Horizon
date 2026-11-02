@@ -363,6 +363,30 @@
         "profile": "cloud-perks"
       },
       {
+        "name": "GitHub: ai-deals-daily AI 厂商活动日报（急报/晚间汇总）",
+        "url": "https://github.com/confidentxin/ai-deals-daily/commits/main.atom",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "GitHub: free-ai-credits 50 家厂商免费额度每日核验",
+        "url": "https://github.com/yanqingwang/free-ai-credits/commits/main.atom",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
+        "name": "freetokens.fyi: 免费额度开始/结束时间线",
+        "url": "https://freetokens.fyi/feed.xml",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks"
+      },
+      {
         "name": "Google: 注册机 / 卡bug / 白嫖（AI羊毛）",
         "url": "https://news.google.com/rss/search?q=%28%E6%B3%A8%E5%86%8C%E6%9C%BA%20OR%20%22%E5%8D%A1bug%22%20OR%20%22bug%E4%BB%B7%22%20OR%20%E7%99%BD%E5%AB%96%29%20%28AI%20OR%20ChatGPT%20OR%20%E4%BC%9A%E5%91%98%20OR%20%E9%A2%9D%E5%BA%A6%20OR%20%E4%BA%91%20OR%20%E8%96%85%29&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
         "enabled": true,
