@@ -17,6 +17,10 @@ on:
         description: "Include Twitter (starts 17 paid Apify runs per fetch)"
         type: boolean
         default: false
+      web:
+        description: "Include web list pages (costs Crawl4AI credits)"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -46,4 +50,7 @@ jobs:
           PROBE_REDDIT: ${{ inputs.reddit && '1' || '' }}
           PROBE_YOUTUBE: ${{ inputs.youtube && '1' || '' }}
           PROBE_TWITTER: ${{ inputs.twitter && '1' || '' }}
+          PROBE_WEB: ${{ inputs.web && '1' || '' }}
+          CRAWL4AI_API_KEY: ${{ secrets.CRAWL4AI_API_KEY }}
+          CRAWL4AI_API_KEY_2: ${{ secrets.CRAWL4AI_API_KEY_2 }}
         run: uv run python scripts/sources_probe.py
