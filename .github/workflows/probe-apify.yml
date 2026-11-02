@@ -8,7 +8,7 @@ jobs:
     env:
       APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
     steps:
-      - name: Dump xquik + apidojo schemas and one full item
+      - name: xquik with its documented field style
         run: |
           python3 - <<'PY'
           import json, os, time, urllib.request, urllib.error
@@ -24,36 +24,51 @@ jobs:
                   with urllib.request.urlopen(req, timeout=90) as r:
                       return json.loads(r.read())
               except urllib.error.HTTPError as e:
-                  return {"err": e.code, "body": e.read()[:200].decode("utf-8", "replace")}
+                  return {"err": e.code, "body": e.read()[:300].decode("utf-8", "replace")}
               except Exception as e:
-                  return {"err": type(e).__name__, "body": str(e)[:200]}
+                  return {"err": type(e).__name__, "body": str(e)[:300]}
 
-          def run(actor, payload):
-              res = call("POST", f"/acts/{actor}/runs", payload)
-              rid, did = res["data"]["id"], res["data"]["defaultDatasetId"]
-              for _ in range(72):
-                  info = call("GET", f"/actor-runs/{rid}")
-                  if info.get("data", {}).get("status") in ("SUCCEEDED", "FAILED", "ABORTED", "TIMED-OUT"):
-                      break
-                  time.sleep(5)
-              items = call("GET", f"/datasets/{did}/items?limit=3")
-              return items if isinstance(items, list) else []
-
-          meta = call("GET", "/acts/xquik~x-tweet-scraper")
-          print("XQUIK example:", json.dumps(meta.get("data", {}).get("exampleRunInput"), ensure_ascii=False)[:800])
-          items = run("xquik~x-tweet-scraper",
-                      {"searchTerms": ["free AI credits"], "maxItems": 100,
-                       "queryType": "Latest + Top", "outputVariant": "rich", "fieldStyle": "camel"})
-          print("XQUIK items:", len(items))
-          if items:
+          payload = {"searchTerms": ["free AI credits"], "maxItems": 100,
+                     "queryType": "Latest + Top", "outputVariant": "rich",
+                     "fieldStyle": "camelCase", "outputPreset": "flat",
+                     "includeSearchTerms": True}
+          res = call("POST", "/acts/xquik~x-tweet-scraper/runs", payload)
+          if "data" not in res:
+              print("start failed:", res); raise SystemExit(0)
+          rid, did = res["data"]["id"], res["data"]["defaultDatasetId"]
+          st = "?"
+          for _ in range(72):
+              info = call("GET", f"/actor-runs/{rid}")
+              st = info.get("data", {}).get("status")
+              if st in ("SUCCEEDED", "FAILED", "ABORTED", "TIMED-OUT"):
+                  break
+              time.sleep(5)
+          items = call("GET", f"/datasets/{did}/items?limit=5")
+          n = len(items) if isinstance(items, list) else -1
+          print(f"xquik status={st} items={n}")
+          if isinstance(items, list) and items:
               it = items[0]
-              print("XQUIK all keys:", sorted(it.keys()))
-              print("XQUIK item:", json.dumps(it, ensure_ascii=False)[:1500])
+              print("all keys:", sorted(it.keys()))
+              print("item:", json.dumps(it, ensure_ascii=False)[:1200])
+          else:
+              print("dataset resp:", str(items)[:300])
 
-          items2 = run("apidojo~twitter-scraper-lite",
-                       {"includeSearchTerms": False, "maxItems": 100,
-                        "searchTerms": ["free AI credits"], "sort": "Latest"})
-          print("APIDOJO items:", len(items2))
-          if items2:
-              print("APIDOJO item:", json.dumps(items2[0], ensure_ascii=False)[:1500])
+          res2 = call("POST", "/acts/apidojo~twitter-scraper-lite/runs",
+                      {"includeSearchTerms": False, "maxItems": 100,
+                       "searchTerms": ["free AI credits"], "sort": "Latest"})
+          if "data" in res2:
+              rid2, did2 = res2["data"]["id"], res2["data"]["defaultDatasetId"]
+              for _ in range(72):
+                  info2 = call("GET", f"/actor-runs/{rid2}")
+                  if info2.get("data", {}).get("status") in ("SUCCEEDED", "FAILED", "ABORTED", "TIMED-OUT"):
+                      st2 = info2["data"]["status"]; break
+                  time.sleep(5)
+              items2 = call("GET", f"/datasets/{did2}/items?limit=2")
+              print(f"apidojo status={st2} items={len(items2) if isinstance(items2, list) else -1}")
+              if isinstance(items2, list) and items2:
+                  it2 = items2[0]
+                  print("apidojo keys:", sorted(it2.keys()))
+                  print("apidojo item:", json.dumps(it2, ensure_ascii=False)[:1200])
+          else:
+              print("apidojo start failed:", res2)
           PY
