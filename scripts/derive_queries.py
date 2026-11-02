@@ -37,11 +37,24 @@ PERK_RE = re.compile(
     r"credits?|free|trial|giveaway|promo|redeem|coupon|discount|student",
     re.I,
 )
-# Brands that are too broad to make a useful single-term feed.
-STOP_ENTITIES = {"API", "Cloud", "Pro", "Tokens", "Horizon", "Google", "The", "New"}
+# Brands that are too broad to make a useful single-term feed, plus marketing
+# words that slip through the capitalised-word heuristic ("ChatGPT Plus").
+STOP_ENTITIES = {
+    "API", "Cloud", "Pro", "Tokens", "Horizon", "Google", "The", "New",
+    "Plus", "Max", "Ultra", "Team", "Business", "Studio", "Beta", "Preview",
+    "Starter", "Basic", "Premium", "Agent", "Credit", "Credits", "Trial",
+    "Deal", "Deals", "Sale", "Offer", "Free", "Official",
+}
 CONFIG = Path("data/config.github.json")
 AUTO = Path("data/auto_queries.json")
 GN = "https://news.google.com/rss/search"
+
+
+def _allowed(term: str) -> bool:
+    """Brand-like token: not a known generic word, long enough to be specific."""
+    return term not in STOP_ENTITIES and (
+        len(term) >= 5 or any(ch.isdigit() for ch in term)
+    )
 
 
 def recent_posts() -> list[str]:
@@ -70,7 +83,7 @@ def recent_posts_counts() -> tuple[Counter, Counter]:
                 entities.update(
                     word
                     for word in ENTITY_RE.findall(title.group(1))
-                    if word not in STOP_ENTITIES
+                    if _allowed(word)
                 )
     return tags, entities
 
@@ -140,7 +153,9 @@ def apply(candidates: list[str]) -> None:
     live = []
     for entry in load_auto():
         try:
-            if datetime.fromisoformat(entry["expires_at"]) > now:
+            if _allowed(str(entry.get("term", ""))) and (
+                datetime.fromisoformat(entry["expires_at"]) > now
+            ):
                 live.append(entry)
         except (KeyError, ValueError):
             continue

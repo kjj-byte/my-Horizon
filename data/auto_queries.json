@@ -8,15 +8,6 @@
       "expires_at": "2026-11-16T14:00:53+00:00",
       "category": "cloud-perks",
       "profile": "cloud-perks"
-    },
-    {
-      "term": "Plus",
-      "name": "自动: Plus",
-      "url": "https://news.google.com/rss/search?q=%22Plus%22+when%3A7d&hl=zh-CN&gl=CN&ceid=CN%3Azh-Hans",
-      "added_at": "2026-11-02T14:02:10+00:00",
-      "expires_at": "2026-11-16T14:02:10+00:00",
-      "category": "cloud-perks",
-      "profile": "cloud-perks"
     }
   ]
 }
