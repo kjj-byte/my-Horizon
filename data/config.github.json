@@ -649,7 +649,7 @@
         "searchTerms": [
           "{query} -filter:replies -filter:nativeretweets"
         ],
-        "maxItems": 30,
+        "maxItems": 15,
         "queryType": "Latest",
         "outputVariant": "rich",
         "fieldStyle": "camelCase",
