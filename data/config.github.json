@@ -441,6 +441,24 @@
         "category": "cloud-perks",
         "content_extractor": null,
         "profile": "cloud-perks"
+      },
+      {
+        "name": "IndieGameBundles: 免费游戏（Steam/GOG/IndieGala）",
+        "url": "https://www.indiegamebundles.com/feed/",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks",
+        "max_items": 10
+      },
+      {
+        "name": "GitHub: CYBIRD-D 免费 LLM API 名单（中英双语）",
+        "url": "https://github.com/CYBIRD-D/FREE-LLM-API-Provider/commits/main.atom",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks",
+        "max_items": 10
       }
     ],
     "reddit": {

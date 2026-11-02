@@ -26,24 +26,44 @@ class ToolResult:
 class WebSearchTool:
     name = "web_search"
 
+    # DuckDuckGo rate-limits silently (empty list) or errors; one retry plus a
+    # second engine turns most CI misses into results.
+    _BACKENDS: tuple[str | None, ...] = (None, "brave", "google")
+    _RETRY_DELAY = 0.5
+
     async def execute(self, arguments: dict[str, Any]) -> list[dict[str, str]]:
         query = arguments.get("query")
         if not isinstance(query, str) or not query.strip():
             raise ValueError("web_search requires a non-empty query")
-        try:
-            raw = await asyncio.to_thread(DDGS().text, query.strip(), max_results=3)
-        except Exception as exc:
-            logger.warning("web_search failed for %r: %s", query, exc)
-            return []
-        return [
-            {
-                "title": str(result.get("title", "")),
-                "url": str(result.get("href", "")),
-                "text": str(result.get("body", "")),
-            }
-            for result in (raw or [])
-            if result.get("href")
-        ]
+
+        error: Exception | None = None
+        for backend in self._BACKENDS:
+            try:
+                kwargs: dict[str, Any] = {"max_results": 3}
+                if backend:
+                    kwargs["backend"] = backend
+                raw = await asyncio.to_thread(DDGS().text, query.strip(), **kwargs)
+            except Exception as exc:  # includes ddgs "No results found"
+                error = exc
+                await asyncio.sleep(self._RETRY_DELAY)
+                continue
+            results = [
+                {
+                    "title": str(result.get("title", "")),
+                    "url": str(result.get("href", "")),
+                    "text": str(result.get("body", "")),
+                }
+                for result in (raw or [])
+                if result.get("href")
+            ]
+            if results:
+                return results
+            error = None
+            await asyncio.sleep(self._RETRY_DELAY)
+
+        if error is not None:
+            logger.warning("web_search failed for %r: %s", query, error)
+        return []
 
 
 class ToolRegistry:
