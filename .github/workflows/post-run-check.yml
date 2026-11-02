@@ -81,7 +81,7 @@ jobs:
 
           cron = [r for r in recent if r["event"] == "schedule"]
           if not cron:
-              lines.append("- 兜底 cron 6 小时内还没排到（GitHub 排队延迟，不算失败）")
+              lines.append("- 兜底 cron 今天还没排到（GitHub 排队延迟，不算失败）")
           elif all(r["conclusion"] == "skipped" for r in cron):
               lines.append("- 兜底 cron 被 preflight 跳过，去重窗口生效")
           else:
