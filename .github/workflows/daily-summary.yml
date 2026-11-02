@@ -80,10 +80,11 @@ jobs:
       - name: Restore recent digests
         run: |
           set -euo pipefail
-          git fetch --no-tags --depth 1 origin gh-pages
+          # No gh-pages yet (first run): the filter just has nothing to compare against.
+          git fetch --no-tags --depth 1 origin gh-pages || { echo "no gh-pages; skipping"; exit 0; }
           mkdir -p docs
-          git archive origin/gh-pages _posts | tar -x -C docs
-          ls docs/_posts | tail -3
+          git archive origin/gh-pages _posts 2>/dev/null | tar -x -C docs || true
+          ls docs/_posts 2>/dev/null | tail -3 || true
 
       - name: Run Horizon
         env:
