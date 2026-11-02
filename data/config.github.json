@@ -459,6 +459,78 @@
         "content_extractor": null,
         "profile": "cloud-perks",
         "max_items": 10
+      },
+      {
+        "name": "YouTube频道: 科技自习室",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCJDPZoVBTuoLZY5f6X9shuA",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks",
+        "max_items": 5
+      },
+      {
+        "name": "YouTube频道: 搞机零距离",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC96OvMh0Mb_3NmuE8Dpu7Gg",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks",
+        "max_items": 5
+      },
+      {
+        "name": "YouTube频道: AI 开箱",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCkz63ciuZ-mxRcvPr8m6DxQ",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks",
+        "max_items": 5
+      },
+      {
+        "name": "YouTube频道: 数码解码",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCffPrldpcuZNeYbzeZ8udxg",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks",
+        "max_items": 5
+      },
+      {
+        "name": "YouTube频道: Code With Yousaf",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCZyFxfw1M44QyjRv751MlGg",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks",
+        "max_items": 5
+      },
+      {
+        "name": "YouTube频道: CodeWithUsman",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC2lhmrOvGdtL5yNfM6qvWIg",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks",
+        "max_items": 5
+      },
+      {
+        "name": "YouTube频道: The AI Margin",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC61ErQr1qbnqrlh01xBVpXA",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks",
+        "max_items": 5
+      },
+      {
+        "name": "YouTube频道: 科技共享",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCQoagx4VHBw3HkAyzvKEEBA",
+        "enabled": true,
+        "category": "cloud-perks",
+        "content_extractor": null,
+        "profile": "cloud-perks",
+        "max_items": 5
       }
     ],
     "reddit": {
@@ -928,7 +1000,7 @@
       "enabled": true,
       "api_key_env": "YOUTUBE_API_KEY",
       "max_results": 40,
-      "max_items": 100,
+      "max_items": 150,
       "queries": [
         {
           "query": "free API key",
@@ -959,6 +1031,26 @@
           "query": "免费额度 云",
           "language": "zh",
           "region": "CN"
+        },
+        {
+          "query": "免费云服务器",
+          "language": "zh",
+          "region": "CN"
+        },
+        {
+          "query": "免费域名",
+          "language": "zh",
+          "region": "CN"
+        },
+        {
+          "query": "免费算力",
+          "language": "zh",
+          "region": "CN"
+        },
+        {
+          "query": "free AI tokens",
+          "language": "en",
+          "region": "US"
         }
       ],
       "category": "cloud-perks",
