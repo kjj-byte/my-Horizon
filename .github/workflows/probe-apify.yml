@@ -4,71 +4,38 @@ on: workflow_dispatch
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    env:
-      APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+    timeout-minutes: 20
     steps:
-      - name: xquik with its documented field style
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: |
+          pip install -q httpx pydantic python-dateutil feedparser
+          pip install -q dateutil 2>/dev/null || true
+      - name: Run Horizon's own TwitterScraper against the new actor
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
         run: |
           python3 - <<'PY'
-          import json, os, time, urllib.request, urllib.error
+          import asyncio, json, sys
+          from datetime import datetime, timedelta, timezone
+          import httpx
+          from src.models import Config
+          from src.scrapers.twitter import TwitterScraper
 
-          token = os.environ["APIFY_TOKEN"]
-          base = "https://api.apify.com/v2"
-          headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+          cfg = Config(**json.load(open("data/config.github.json", encoding="utf-8")))
+          tw = cfg.sources.twitter
+          tw.keywords = tw.keywords[:2]
+          print("actor:", tw.actor_id, "| keywords:", tw.keywords)
 
-          def call(method, path, body=None):
-              data = json.dumps(body).encode() if body is not None else None
-              req = urllib.request.Request(base + path, data=data, headers=headers, method=method)
-              try:
-                  with urllib.request.urlopen(req, timeout=90) as r:
-                      return json.loads(r.read())
-              except urllib.error.HTTPError as e:
-                  return {"err": e.code, "body": e.read()[:300].decode("utf-8", "replace")}
-              except Exception as e:
-                  return {"err": type(e).__name__, "body": str(e)[:300]}
+          async def main():
+              async with httpx.AsyncClient(timeout=60) as client:
+                  items = await TwitterScraper(tw, client).fetch(
+                      datetime.now(timezone.utc) - timedelta(hours=72))
+              print("ITEMS", len(items))
+              for i in items[:5]:
+                  print(" -", i.published_at.strftime("%m-%d %H:%M"), "|", i.title[:70])
 
-          payload = {"searchTerms": ["free AI credits"], "maxItems": 100,
-                     "queryType": "Latest + Top", "outputVariant": "rich",
-                     "fieldStyle": "camelCase", "outputPreset": "flat",
-                     "includeSearchTerms": True}
-          res = call("POST", "/acts/xquik~x-tweet-scraper/runs", payload)
-          if "data" not in res:
-              print("start failed:", res); raise SystemExit(0)
-          rid, did = res["data"]["id"], res["data"]["defaultDatasetId"]
-          st = "?"
-          for _ in range(72):
-              info = call("GET", f"/actor-runs/{rid}")
-              st = info.get("data", {}).get("status")
-              if st in ("SUCCEEDED", "FAILED", "ABORTED", "TIMED-OUT"):
-                  break
-              time.sleep(5)
-          items = call("GET", f"/datasets/{did}/items?limit=5")
-          n = len(items) if isinstance(items, list) else -1
-          print(f"xquik status={st} items={n}")
-          if isinstance(items, list) and items:
-              it = items[0]
-              print("all keys:", sorted(it.keys()))
-              print("item:", json.dumps(it, ensure_ascii=False)[:1200])
-          else:
-              print("dataset resp:", str(items)[:300])
-
-          res2 = call("POST", "/acts/apidojo~twitter-scraper-lite/runs",
-                      {"includeSearchTerms": False, "maxItems": 100,
-                       "searchTerms": ["free AI credits"], "sort": "Latest"})
-          if "data" in res2:
-              rid2, did2 = res2["data"]["id"], res2["data"]["defaultDatasetId"]
-              for _ in range(72):
-                  info2 = call("GET", f"/actor-runs/{rid2}")
-                  if info2.get("data", {}).get("status") in ("SUCCEEDED", "FAILED", "ABORTED", "TIMED-OUT"):
-                      st2 = info2["data"]["status"]; break
-                  time.sleep(5)
-              items2 = call("GET", f"/datasets/{did2}/items?limit=2")
-              print(f"apidojo status={st2} items={len(items2) if isinstance(items2, list) else -1}")
-              if isinstance(items2, list) and items2:
-                  it2 = items2[0]
-                  print("apidojo keys:", sorted(it2.keys()))
-                  print("apidojo item:", json.dumps(it2, ensure_ascii=False)[:1200])
-          else:
-              print("apidojo start failed:", res2)
+          asyncio.run(main())
           PY
