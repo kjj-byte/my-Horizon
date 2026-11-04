@@ -2,11 +2,11 @@ name: Daily Horizon Summary
 
 on:
   schedule:
-    # Fallback only. 22:00 UTC = 06:00 Asia/Shanghai, the local task's own start
-    # time; preflight skips it when the local run has already published, and a
-    # local run still in flight keeps it queued behind the same concurrency group.
-    # This cron is UTC: changing display.timezone also means editing this line.
-    - cron: '0 22 * * *'
+    # Fallback only. 23:30 UTC = 07:30 Asia/Shanghai, 1.5h after the local 06:00
+    # task, so a run that is slow or queued still finishes first; preflight then
+    # skips this one. This cron is UTC: changing display.timezone also means
+    # editing this line.
+    - cron: '30 23 * * *'
   workflow_dispatch:      # Allow manual trigger; the 06:00 task uses this too
     inputs:
       # Manual runs honour the dedupe unless this is set. The scheduled cron must

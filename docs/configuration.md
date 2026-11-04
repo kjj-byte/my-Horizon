@@ -81,7 +81,7 @@ belongs to:
 }
 ```
 
-A run at 06:00 Asia/Shanghai happens at 22:00 UTC the day before. With the
+A run at 07:30 Asia/Shanghai happens at 23:30 UTC the day before. With the
 default `UTC`, that run is dated with the previous day; setting the zone names
 the summary, its email subject, and `docs/_posts/<date>-summary-<lang>.md` after
 the local day. Scheduled-run de-duplication in the workflow derives its dates
