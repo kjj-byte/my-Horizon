@@ -2,12 +2,12 @@ name: Daily Horizon Summary
 
 on:
   schedule:
-    # Fallback only. 00:30 UTC = 08:30 Asia/Shanghai, kept 1.5h after the local 07:00
-    # task so a longer run (more RSS) does not collide. Primary trigger is the local
-    # Windows task at 07:00; the preflight job below prevents a double run.
+    # Fallback only. 22:00 UTC = 06:00 Asia/Shanghai, the local task's own start
+    # time; preflight skips it when the local run has already published, and a
+    # local run still in flight keeps it queued behind the same concurrency group.
     # This cron is UTC: changing display.timezone also means editing this line.
-    - cron: '30 0 * * *'
-  workflow_dispatch:      # Allow manual trigger; the 07:00 task uses this too
+    - cron: '0 22 * * *'
+  workflow_dispatch:      # Allow manual trigger; the 06:00 task uses this too
     inputs:
       # Manual runs honour the dedupe unless this is set. The scheduled cron must
       # never see a publish before it, so force stays off by default.
@@ -37,7 +37,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
-          # GitHub can queue a cron hours late; 12h still covers the 07:00 run
+          # GitHub can queue a cron hours late; 12h still covers the 06:00 run
           # (a cron landed 7h late and produced a duplicate summary).
           WINDOW_HOURS: "12"
         run: |
@@ -59,7 +59,7 @@ jobs:
 
   daily-summary:
     needs: preflight
-    # Every trigger honours the dedupe; only an explicit force=true skips it. The 07:00
+    # Every trigger honours the dedupe; only an explicit force=true skips it. The 06:00
     # task and the cron both must not publish twice if the other one already did.
     if: ${{ !cancelled() && (inputs.force == true || needs.preflight.outputs.skip != 'true') }}
     runs-on: ubuntu-latest
@@ -113,12 +113,18 @@ jobs:
           set -euo pipefail
           # No gh-pages yet (first run): the filter just has nothing to compare against.
           git fetch --no-tags --depth 1 origin gh-pages || { echo "::warning::no gh-pages; repeat filter is off"; exit 0; }
+          if ! git cat-file -e FETCH_HEAD:_posts 2>/dev/null; then
+            echo "::warning::gh-pages has no _posts yet; repeat filter is off"
+            exit 0
+          fi
           mkdir -p docs
-          git archive origin/gh-pages _posts 2>/dev/null | tar -x -C docs || true
-          count=$(ls docs/_posts 2>/dev/null | wc -l)
+          # FETCH_HEAD avoids assuming how actions/checkout set up remote-tracking refs.
+          git archive FETCH_HEAD _posts | tar -x -C docs
+          count=$(ls docs/_posts 2>/dev/null | wc -l || true)
           echo "restored $count posts"
           if [ "$count" -eq 0 ]; then
-            echo "::warning::no posts restored; repeats will not be filtered today"
+            echo "::error::posts exist on gh-pages but none were restored; refusing to publish a digest that would repeat earlier ones"
+            exit 1
           fi
 
       - name: Run Horizon

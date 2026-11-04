@@ -734,7 +734,8 @@ class HorizonOrchestrator:
 
         This is a stable stage helper for integrations such as MCP.
 
-        Sends all item titles, tags, and summaries to AI in a single call.
+        Sends item titles, tags, and summaries to AI in batches of
+        `ai.dedup_batch_size` calls.
         Items must already be sorted by analysis score descending so that the first
         item in each duplicate group is always the highest-scored one.
         Content (comments) from duplicate items is merged into the primary.
@@ -745,6 +746,33 @@ class HorizonOrchestrator:
             return items
 
         from .ai.prompting.deduplication import TOPIC_DEDUP_SYSTEM, TOPIC_DEDUP_USER
+
+        # One call carries every title; a large day overflows the context and the
+        # AI call fails, leaving all duplicates in the digest.
+        batch_size = self.config.ai.dedup_batch_size
+        deduped: List[ContentItem] = []
+        for start in range(0, len(items), batch_size):
+            deduped.extend(
+                await self._dedup_topic_batch(
+                    items[start:start + batch_size],
+                    TOPIC_DEDUP_SYSTEM,
+                    TOPIC_DEDUP_USER,
+                    log=log,
+                )
+            )
+        return deduped
+
+    async def _dedup_topic_batch(
+        self,
+        items: List[ContentItem],
+        system: str,
+        user_template: str,
+        *,
+        log: bool,
+    ) -> List[ContentItem]:
+        if len(items) <= 1:
+            return items
+
         from .ai.utils import parse_json_response
 
         # Build the item list for the prompt
@@ -758,10 +786,8 @@ class HorizonOrchestrator:
 
         try:
             ai_client = create_ai_client(self.config.ai)
-            response = await ai_client.complete(
-                system=TOPIC_DEDUP_SYSTEM,
-                user=TOPIC_DEDUP_USER.format(items=items_text),
-            )
+            user = user_template.format(items=items_text)
+            response = await ai_client.complete(system=system, user=user)
             result = parse_json_response(response)
             if result is None:
                 if log:

@@ -81,7 +81,7 @@ belongs to:
 }
 ```
 
-A run at 07:00 Asia/Shanghai happens at 23:00 UTC the day before. With the
+A run at 06:00 Asia/Shanghai happens at 22:00 UTC the day before. With the
 default `UTC`, that run is dated with the previous day; setting the zone names
 the summary, its email subject, and `docs/_posts/<date>-summary-<lang>.md` after
 the local day. Scheduled-run de-duplication in the workflow derives its dates
@@ -322,7 +322,8 @@ By default, AI scoring and enrichment run one item at a time. If your API endpoi
 
 - `analysis_concurrency`: Number of items scored in parallel. Default is `1`.
 - `enrichment_concurrency`: Number of high-scoring items enriched in parallel. Default is `1`.
-- Both values are clamped to a minimum of `1`.
+- `dedup_batch_size`: Items per AI topic-dedup call. Default is `80`; a larger day is split into several calls instead of overflowing one request and leaving every duplicate in the digest.
+- Both concurrency values are clamped to a minimum of `1`.
 - Preserve the existing retry behavior per item.
 - Result ordering is preserved regardless of concurrency.
 - If you also use `throttle_sec`, each concurrent task sleeps independently after finishing an item.
@@ -611,6 +612,10 @@ The runtime `collection` section controls the fetch window and contains only
 ```
 
 - `time_window_hours`: Fetch content from last N hours
+
+Keep it close to the run interval: links published in the previous digests are
+filtered out separately, so a window far wider than the interval mostly adds
+items that are dropped again, and it only hides gaps larger than one run.
 
 The runtime `digest` section controls final section order and optional balanced
 digest limits:

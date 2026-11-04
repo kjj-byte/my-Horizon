@@ -37,6 +37,19 @@ def test_same_link_is_matched_through_noise(tmp_path):
     assert digest_url_key("https://example.com/story") in urls
 
 
+def test_html_escaped_link_matches_plain_url(tmp_path):
+    """Posts escape `&` as `&amp;`; the fetched item URL does not."""
+    _post(
+        tmp_path,
+        [("昨天", "https://example.com/story?a=1&amp;b=2")],
+        TODAY - timedelta(days=1),
+    )
+
+    urls = recent_digest_urls(tmp_path, TODAY)
+
+    assert digest_url_key("https://example.com/story?a=1&b=2") in urls
+
+
 def test_unrelated_files_are_ignored(tmp_path):
     (tmp_path / "notes.md").write_text("## [x](https://example.com/notes)", encoding="utf-8")
     (tmp_path / "2026-13-40-summary-zh.md").write_text(

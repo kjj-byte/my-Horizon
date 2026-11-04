@@ -202,6 +202,9 @@ class AIConfig(BaseModel):
     throttle_sec: float = 0.0
     analysis_concurrency: int = 1
     enrichment_concurrency: int = 1
+    # Items per AI topic-dedup call: one call for a large day overflows the
+    # context and silently leaves every duplicate in the digest.
+    dedup_batch_size: int = Field(default=80, gt=0)
     languages: List[str] = Field(default_factory=lambda: ["en"])
     # Azure OpenAI specific; required when provider == AZURE
     azure_endpoint_env: Optional[str] = None

@@ -24,7 +24,7 @@ def _item(title: str) -> SimpleNamespace:
 
 def _orchestrator() -> HorizonOrchestrator:
     orch = object.__new__(HorizonOrchestrator)
-    orch.config = SimpleNamespace(ai=SimpleNamespace())
+    orch.config = SimpleNamespace(ai=SimpleNamespace(dedup_batch_size=80))
     orch.console = SimpleNamespace(print=lambda *a, **k: None)
     return orch
 

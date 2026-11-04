@@ -4,6 +4,7 @@ The fetch window is 72h, so without this every story from yesterday's digest is
 fetched and re-selected again today.
 """
 
+import html
 import logging
 import re
 from datetime import date, timedelta
@@ -20,8 +21,11 @@ _ITEM_URL = re.compile(r"^#{2,3} \[.+?\]\((https?://[^)\s]+)\)", re.MULTILINE)
 
 
 def digest_url_key(url: str) -> str:
-    """Identity of a link across digests: ignore fragment, trailing slash, case."""
-    return urldefrag(url)[0].rstrip("/").lower()
+    """Identity of a link across digests: ignore fragment, trailing slash, case.
+
+    Posts store links HTML-escaped (`&amp;`), fetched items do not.
+    """
+    return urldefrag(html.unescape(url))[0].rstrip("/").lower()
 
 
 def recent_digest_urls(

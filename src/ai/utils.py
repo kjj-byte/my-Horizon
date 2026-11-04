@@ -10,6 +10,9 @@ def parse_json_response(response: str) -> Optional[dict]:
 
     Returns the parsed dict, or None if all strategies fail.
     """
+    if not isinstance(response, str):
+        # An empty tool-call reply arrives as None; .strip() would raise instead.
+        return None
     text = response.strip()
 
     # Strategy 1: direct parse
