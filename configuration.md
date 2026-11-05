@@ -121,6 +121,13 @@ automatic matching cannot select a profile:
 - `profile_settings`: User preferences keyed by profile ID. `threshold` accepts
   `0` through `10` or `null` for no score filter; `topic_dedup` defaults to
   `true`. Unknown profile IDs are rejected when Horizon starts.
+- `exclude_keywords`: case-insensitive substrings that drop an item for every
+  profile. They are matched against the title and body **before** any AI call,
+  so an excluded topic also saves scoring tokens. `exclude_url_substrings` does
+  the same for item URLs.
+- Each `profile_settings.<id>` may also set `exclude_keywords` and
+  `exclude_url_substrings`, but those only reach items that profile already
+  claimed; use `processing.exclude_*` to block a topic from every profile.
 
 Each profile owns its matching, analysis, and enrichment behavior. Runtime
 filtering preferences stay in the main JSON configuration. See [Processing
