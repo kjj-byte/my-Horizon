@@ -83,6 +83,25 @@ the profile's settings:
 }
 ```
 
+A profile can also name noise the score misses — grey-market posts and
+mirror/squatter domains that clear a search snippet — in the same block.
+Substring match, case-insensitive on title plus body, case-sensitive on URL;
+these have no MCP override and apply only when the profile has settings:
+
+```json
+{
+  "processing": {
+    "profile_settings": {
+      "cloud-perks": {
+        "threshold": 5.0,
+        "exclude_url_substrings": ["zssou.com"],
+        "exclude_keywords": ["注册机"]
+      }
+    }
+  }
+}
+```
+
 A threshold passed to an MCP operation overrides all configured profile
 thresholds for that operation. Analysis still produces scores when filtering is
 disabled; only score-based filtering is bypassed. Topic deduplication and digest

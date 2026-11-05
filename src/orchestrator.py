@@ -306,8 +306,11 @@ class HorizonOrchestrator:
                     f"→ {len(merged_items)} unique items\n"
                 )
 
-            # 4. Drop items already published in the last few digests
-            merged_items = self.drop_recent_digests(merged_items)
+            # 4. Drop items already published in the last few digests, and every
+            # item matching processing.exclude_* before it costs an AI call.
+            merged_items = self.drop_excluded_items(
+                self.drop_recent_digests(merged_items)
+            )
             if not merged_items:
                 self.console.print(
                     f"[yellow]Every fetched item was already published in the last "
@@ -703,6 +706,28 @@ class HorizonOrchestrator:
 
         return merged
 
+    def drop_excluded_items(self, items: List[ContentItem]) -> List[ContentItem]:
+        """Drop items matching processing.exclude_keywords / exclude_url_substrings."""
+        settings = self.config.processing
+        keywords = [part.lower() for part in settings.exclude_keywords]
+        url_parts = settings.exclude_url_substrings
+        if not keywords and not url_parts:
+            return items
+        kept = [
+            item
+            for item in items
+            if not (
+                any(part in f"{item.title}\n{item.content or ''}".lower() for part in keywords)
+                or any(part in str(item.url) for part in url_parts)
+            )
+        ]
+        dropped = len(items) - len(kept)
+        if dropped:
+            self.console.print(
+                f"{self.icons['cleanup']} Dropped {dropped} excluded items\n"
+            )
+        return kept
+
     def drop_recent_digests(self, items: List[ContentItem]) -> List[ContentItem]:
         """Drop items whose link already appeared in the previous daily digests.
 
@@ -970,6 +995,12 @@ class HorizonOrchestrator:
             return False
         profile_id = item.processing.classification.profile
         settings = self.config.processing.profile_settings.get(profile_id)
+        if settings is not None:
+            lowered = f"{item.title}\n{item.content or ''}".lower()
+            if any(part in lowered for part in settings.exclude_keywords) or any(
+                part in str(item.url) for part in settings.exclude_url_substrings
+            ):
+                return False
         effective_threshold = threshold
         if effective_threshold is None and settings is not None:
             effective_threshold = settings.threshold

@@ -653,6 +653,9 @@ class ProfileSettingsConfig(BaseModel):
 
     threshold: Optional[float] = Field(default=None, ge=0, le=10)
     topic_dedup: bool = True
+    # A low score can still clear a search snippet; these drop noise the score missed.
+    exclude_url_substrings: List[str] = Field(default_factory=list)
+    exclude_keywords: List[str] = Field(default_factory=list)
 
 
 class ProcessingConfig(BaseModel):
@@ -663,6 +666,10 @@ class ProcessingConfig(BaseModel):
     profiles_dir: str = "profiles"
     default_profile: str = "tech-news"
     profile_settings: Dict[str, ProfileSettingsConfig] = Field(default_factory=dict)
+    # Applied to every item before any AI call; per-profile exclude_* only reach
+    # items that profile already claimed.
+    exclude_keywords: List[str] = Field(default_factory=list)
+    exclude_url_substrings: List[str] = Field(default_factory=list)
 
 
 class DisplayConfig(BaseModel):

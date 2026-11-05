@@ -1128,7 +1128,19 @@
     "profile_settings": {
       "cloud-perks": {
         "threshold": 5.0,
-        "topic_dedup": true
+        "topic_dedup": true,
+        "exclude_url_substrings": [
+          "zssou.com",
+          "oycbn.com",
+          "xifukan.com"
+        ],
+        "exclude_keywords": [
+          "注册机",
+          "卖号",
+          "收号",
+          "卡密自动发货",
+          "免费额度回收"
+        ]
       },
       "tech-news": {
         "threshold": 7.0,
@@ -1146,7 +1158,10 @@
         "threshold": 7.0,
         "topic_dedup": true
       }
-    }
+    },
+    "exclude_keywords": [
+      "Muse"
+    ]
   },
   "display": {
     "icon_style": "emoji",
