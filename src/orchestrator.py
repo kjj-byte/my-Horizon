@@ -40,6 +40,7 @@ from .processing import ProfileRegistry
 from .processing.repeat_filter import (
     REPEAT_DIGEST_DAYS,
     digest_url_key,
+    published_today,
     recent_digest_urls,
 )
 from .processing.tools import ToolRegistry
@@ -266,6 +267,15 @@ class HorizonOrchestrator:
             f"[bold cyan]{self.icons['start']} Horizon - Starting aggregation...[/bold cyan]\n"
         )
 
+        if not force_hours and self.today_already_published():
+            # The restored gh-pages posts already hold today's digest; a second run
+            # would publish a slightly different version of the same day.
+            self.console.print(
+                "[yellow]Already published a digest for today; skipping this run."
+                " (--hours overrides this.)[/yellow]"
+            )
+            return
+
         # Check email subscriptions if configured
         if (
             self.email_manager
@@ -308,8 +318,10 @@ class HorizonOrchestrator:
 
             # 4. Drop items already published in the last few digests, and every
             # item matching processing.exclude_* before it costs an AI call.
+            # A second run in the same day must not republish that day's digest.
+            include_today = self.today_already_published()
             merged_items = self.drop_excluded_items(
-                self.drop_recent_digests(merged_items)
+                self.drop_recent_digests(merged_items, include_today=include_today)
             )
             if not merged_items:
                 self.console.print(
@@ -728,15 +740,29 @@ class HorizonOrchestrator:
             )
         return kept
 
-    def drop_recent_digests(self, items: List[ContentItem]) -> List[ContentItem]:
+    def today_already_published(self) -> bool:
+        """True when this run is a second run of a day that already published."""
+        return published_today(
+            Path("docs/_posts"),
+            date.fromisoformat(calendar_date(self.config.display.timezone)),
+        )
+
+    def drop_recent_digests(
+        self,
+        items: List[ContentItem],
+        *,
+        include_today: bool = False,
+    ) -> List[ContentItem]:
         """Drop items whose link already appeared in the previous daily digests.
 
         The fetch window is 72h, so yesterday's stories would otherwise be
-        fetched and published again today.
+        fetched and published again today. `include_today` keeps a second run in
+        the same day from republishing that day's first digest.
         """
         seen = recent_digest_urls(
             Path("docs/_posts"),
             date.fromisoformat(calendar_date(self.config.display.timezone)),
+            include_today=include_today,
         )
         if not seen:
             return items

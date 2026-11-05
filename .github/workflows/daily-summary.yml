@@ -162,6 +162,29 @@ jobs:
           publish_branch: gh-pages
           enable_jekyll: true
           full_commit_message: "published at ${{ github.run_started_at }}"
+          # deploy-docs.yml rewrites _posts on every push to main; without this a
+          # push that lands mid-run turns this push non-fast-forward and the day's
+          # deploy fails (11-04 lost its publish step that way).
+          force_orphan: false
+
+      # The deploy action pushes once; one rebase+retry covers a concurrent
+      # gh-pages write by deploy-docs.yml or a second daily run.
+      - name: Retry the publish if gh-pages moved under it
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch --no-tags --depth 1 origin gh-pages
+          stage=$(mktemp -d)
+          git worktree add --detach "$stage" FETCH_HEAD
+          cp -r docs/. "$stage/"
+          cd "$stage"
+          git add -A
+          git commit -m "📝 Daily Summary: ${DATE} (retry)"
+          git push origin HEAD:gh-pages
 
   # Runs when the daily job fails OR times out (a timeout is a failure, and the
   # run is killed before it can send its own failure email).

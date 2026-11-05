@@ -29,15 +29,21 @@ def digest_url_key(url: str) -> str:
 
 
 def recent_digest_urls(
-    posts_dir: Path, today: date, days: int = REPEAT_DIGEST_DAYS
+    posts_dir: Path,
+    today: date,
+    days: int = REPEAT_DIGEST_DAYS,
+    *,
+    include_today: bool = False,
 ) -> set[str]:
     """URLs published in the `days` digests before `today`.
 
     Today's own digest is excluded so a re-run of the same day does not filter
-    out everything it just published.
+    out everything it just published. `include_today` is for a second run in the
+    same day: the day's first publish must not be republished.
     """
     urls: set[str] = set()
     start = today - timedelta(days=days)
+    end = today + timedelta(days=1) if include_today else today
     if not posts_dir.is_dir():
         logger.warning(
             "Repeat filter has no digest directory at %s; repeats are not filtered.",
@@ -52,7 +58,7 @@ def recent_digest_urls(
             digest_date = date.fromisoformat(match[1])
         except ValueError:
             continue
-        if not start <= digest_date < today:
+        if not start <= digest_date < end:
             continue
         try:
             text = path.read_text(encoding="utf-8")
@@ -61,3 +67,25 @@ def recent_digest_urls(
             continue
         urls.update(digest_url_key(url) for url in _ITEM_URL.findall(text))
     return urls
+
+
+def published_today(posts_dir: Path, today: date) -> bool:
+    """True when `today` already has a digest on the restored gh-pages posts.
+
+    That is the one case where re-running the same day should not publish a
+    second, slightly different version of the same digest.
+    """
+    return any(
+        (digest_date := _post_date(path)) is not None and digest_date == today
+        for path in posts_dir.glob("*-summary-*.md")
+    )
+
+
+def _post_date(path: Path) -> date | None:
+    match = _POST_NAME.match(path.name)
+    if not match:
+        return None
+    try:
+        return date.fromisoformat(match[1])
+    except ValueError:
+        return None
