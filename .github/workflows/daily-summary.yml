@@ -28,34 +28,35 @@ jobs:
       contents: read
     outputs:
       skip: ${{ steps.check.outputs.skip }}
+      publish: ${{ steps.check.outputs.publish }}
     steps:
       - name: Checkout config
         uses: actions/checkout@v6
 
-      - name: Skip if a summary was already published inside the window
+      - name: Skip if this run is a duplicate of one already published
         id: check
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
-          # GitHub can queue a cron hours late; 12h still covers the 06:00 run
-          # (a cron landed 7h late and produced a duplicate summary).
-          WINDOW_HOURS: "12"
         run: |
           set -euo pipefail
           # Post filenames use display.timezone, not the runner's UTC day.
           TZ_NAME=$(python3 -c "import json;print(json.load(open('data/config.github.json'))['display']['timezone'])")
+          DATE=$(TZ="$TZ_NAME" date +%F)
           skip=false
-          now=$(date -u +%s)
-          for d in "$(TZ="$TZ_NAME" date +%F)" "$(TZ="$TZ_NAME" date -d 'yesterday' +%F)"; do
-            ts=$(gh api "repos/$REPO/commits?path=_posts/$d-summary-zh.md&sha=gh-pages&per_page=1" \
-                 --jq '.[0].commit.committer.date' 2>/dev/null || true)
-            if [ -n "$ts" ] && [ "$ts" != "null" ]; then
-              age_h=$(( (now - $(date -u -d "$ts" +%s)) / 3600 ))
-              echo "$d-summary-zh.md last committed $ts (${age_h}h ago)"
-              if [ "$age_h" -lt "$WINDOW_HOURS" ]; then skip=true; fi
-            fi
-          done
+          # Same-day runs are identical by definition (same 36h window), so one publish per
+          # local day; a cron queued into the next day still publishes, just only once.
+          # Committer dates are no proof of a publish: every re-publish rewrites them.
+          published=$(gh api "repos/$REPO/commits?path=_posts/$DATE-summary-zh.md&sha=gh-pages&per_page=1" \
+                      --jq 'if length > 0 then "true" else "false" end' 2>/dev/null || echo false)
+          if [ "$published" = "true" ]; then
+            echo "_posts/$DATE-summary-zh.md is already on gh-pages"
+            skip=true
+          else
+            echo "_posts/$DATE-summary-zh.md not on gh-pages yet"
+          fi
           echo "skip=$skip" >> "$GITHUB_OUTPUT"
+          echo "publish=$(TZ="$TZ_NAME" date -d '+1 day' +%F)" >> "$GITHUB_OUTPUT"
 
   daily-summary:
     needs: preflight
@@ -143,10 +144,13 @@ jobs:
           HORIZON_WEBHOOK_URL: ${{ secrets.HORIZON_WEBHOOK_URL }}
         run: uv run horizon
 
-      - name: Set current date as environment variable
+      - name: Set the publish date
+        env:
+          PUBLISH_DATE: ${{ needs.preflight.outputs.publish }}
         run: |
-          TZ_NAME=$(python3 -c "import json;print(json.load(open('data/config.json'))['display']['timezone'])")
-          echo "DATE=$(TZ="$TZ_NAME" date +'%Y-%m-%d')" >> $GITHUB_ENV
+          # The date preflight checked: a run finishing after local midnight must publish
+          # under that date, to the post file the preflight checked, not tomorrow's.
+          echo "DATE=$PUBLISH_DATE" >> $GITHUB_ENV
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
@@ -157,6 +161,7 @@ jobs:
           commit_message: "📝 Daily Summary: ${{ env.DATE }}"
           publish_branch: gh-pages
           enable_jekyll: true
+          full_commit_message: "published at ${{ github.run_started_at }}"
 
   # Runs when the daily job fails OR times out (a timeout is a failure, and the
   # run is killed before it can send its own failure email).
@@ -164,6 +169,7 @@ jobs:
     needs: daily-summary
     if: failure()
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout mailer
         uses: actions/checkout@v6

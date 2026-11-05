@@ -70,17 +70,33 @@ def daily_job_conclusion(repo: str, run_id: int) -> str | None:
     return None
 
 
+def failed_step(repo: str, run_id: int) -> str | None:
+    """Name of the step that killed the run, so the email says why."""
+    data = gh_json(f"repos/{repo}/actions/runs/{run_id}/jobs")
+    if not data:
+        return None
+    for job in data.get("jobs", []):
+        if job.get("name") != "daily-summary":
+            continue
+        for step in job.get("steps", []):
+            if step.get("conclusion") == "failure":
+                return step.get("name")
+    return None
+
+
 def verdict(
     runs: list[dict],
     post: dict | None,
     today: str,
     zone: ZoneInfo,
     cron_jobs: dict[int, str | None] | None = None,
+    failed: dict[int, str | None] | None = None,
 ) -> tuple[list[str], list[str]]:
     """Return (report lines, problems). Problems make the check fail."""
     lines: list[str] = []
     problems: list[str] = []
     cron_jobs = cron_jobs or {}
+    failed = failed or {}
 
     for run in runs:
         created = datetime.datetime.fromisoformat(
@@ -95,6 +111,10 @@ def verdict(
 
     if post is None:
         problems.append(f"gh-pages 上没有 _posts/{today}-summary-zh.md")
+        for run in runs:
+            if run.get("conclusion") == "failure":
+                step = failed.get(run["id"]) or "某个步骤"
+                problems.append(f"{run['event']} 那轮的 {step} 失败（运行页 → 失败步骤看日志）")
     else:
         lines.append(f"- 已发布 _posts/{today}-summary-zh.md（{post.get('size', 0)} 字节）")
 
@@ -103,11 +123,16 @@ def verdict(
         lines.append("- 兜底 cron 今天还没排到（GitHub 排队延迟，不算失败）")
     else:
         outcomes = [cron_jobs.get(run["id"]) for run in cron]
+        # A skipped cron is only fine when today's post already exists; otherwise the
+        # dedupe just swallowed the only run of the day and nothing will publish.
         if all(outcome == "skipped" for outcome in outcomes):
-            lines.append("- 兜底 cron 被 preflight 跳过，去重窗口生效")
+            if post is None:
+                lines.append("- 兜底 cron 被 preflight 跳过，但今天没有日报")
+                problems.append("06:00 那轮没发，兜底 cron 又按同日去重跳过")
+            else:
+                lines.append("- 兜底 cron 被 preflight 跳过，今天已由早上的运行发布")
         elif any(outcome in ("success", "failure") for outcome in outcomes):
-            lines.append("- 兜底 cron 实际跑了一轮：可能与 07:00 那轮重复")
-            problems.append("cron 没有被去重跳过（窗口或日期判定可能失效）")
+            lines.append("- 兜底 cron 实际跑了一轮")
         else:
             lines.append("- 无法确认兜底 cron 是跳过还是真跑（job 状态查不到）")
 
@@ -143,12 +168,17 @@ def main() -> int:
     )
     post = gh_json(f"repos/{repo}/contents/_posts/{today}-summary-zh.md?ref=gh-pages")
     today_list = today_runs(runs, today, zone)
+    failed = {
+        run["id"]: failed_step(repo, run["id"])
+        for run in today_list
+        if run.get("conclusion") == "failure"
+    }
     cron_jobs = {
         run["id"]: daily_job_conclusion(repo, run["id"])
         for run in today_list
         if run["event"] == "schedule"
     }
-    lines, problems = verdict(today_list, post, today, zone, cron_jobs)
+    lines, problems = verdict(today_list, post, today, zone, cron_jobs, failed)
     body = build_body(lines, problems, repo)
     print(body)
 
