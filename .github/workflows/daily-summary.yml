@@ -153,6 +153,7 @@ jobs:
           echo "DATE=$PUBLISH_DATE" >> $GITHUB_ENV
 
       - name: Deploy to GitHub Pages
+        id: deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -167,10 +168,11 @@ jobs:
           # deploy fails (11-04 lost its publish step that way).
           force_orphan: false
 
-      # The deploy action pushes once; one rebase+retry covers a concurrent
-      # gh-pages write by deploy-docs.yml or a second daily run.
+      # Only a failed deploy gets retried. On if: failure() alone this also ran
+      # after a failed Run Horizon, with no new post in docs/, and pushed an
+      # empty "Daily Summary" commit that post_run_check then counts as published.
       - name: Retry the publish if gh-pages moved under it
-        if: failure()
+        if: failure() && steps.deploy.outcome == 'failure'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -182,6 +184,8 @@ jobs:
           git worktree add --detach "$stage" FETCH_HEAD
           cp -r docs/. "$stage/"
           cd "$stage"
+          # A publish with no digest for today must fail, not record an empty day.
+          test -f "_posts/${DATE}-summary-zh.md"
           git add -A
           git commit -m "📝 Daily Summary: ${DATE} (retry)"
           git push origin HEAD:gh-pages

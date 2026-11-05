@@ -1,0 +1,1 @@
+{"ai": {"provider": "anthropic", "model": "claude-3-sonnet", "api_key_env": "ANTHROPIC_API_KEY"}, "sources": {"hackernews": {"enabled": true}}, "collection": {"time_window_hours": 24}}

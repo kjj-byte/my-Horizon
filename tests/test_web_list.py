@@ -23,11 +23,12 @@ def _config(**kwargs) -> WebListConfig:
 
 def test_extract_rows_become_items(monkeypatch) -> None:
     monkeypatch.setenv("CRAWL4AI_API_KEY", "key")
+    today = datetime.now(timezone.utc).date().isoformat()
     rows = [
         {
             "title": "免费领 100 元额度",
             "url": "/deal/1",
-            "date": "2026-11-02",
+            "date": today,
             "summary": "注册即领",
         },
         {"title": "旧活动", "url": "https://example.com/deal/0", "date": "2026-10-01"},
@@ -70,6 +71,7 @@ def test_missing_key_returns_empty(monkeypatch) -> None:
 def test_second_key_used_when_first_has_no_credit(monkeypatch) -> None:
     monkeypatch.setenv("CRAWL4AI_API_KEY", "first")
     monkeypatch.setenv("CRAWL4AI_API_KEY_2", "second")
+    today = datetime.now(timezone.utc).date().isoformat()
     seen = []
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -81,7 +83,7 @@ def test_second_key_used_when_first_has_no_credit(monkeypatch) -> None:
             json={
                 "ok": True,
                 "data": [
-                    {"title": "item", "url": "https://example.com/1", "date": "2026-11-02"}
+                    {"title": "item", "url": "https://example.com/1", "date": today}
                 ],
             },
         )
@@ -100,6 +102,7 @@ def test_second_key_used_when_first_has_no_credit(monkeypatch) -> None:
 
 def test_rows_without_title_or_url_are_skipped(monkeypatch) -> None:
     monkeypatch.setenv("CRAWL4AI_API_KEY", "key")
+    today = datetime.now(timezone.utc).date().isoformat()
 
     def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(
@@ -109,7 +112,7 @@ def test_rows_without_title_or_url_are_skipped(monkeypatch) -> None:
                 "data": [
                     {"title": "", "url": "https://example.com/1"},
                     {"title": "no url"},
-                    {"title": "ok", "url": "https://example.com/ok", "date": "2026-11-02"},
+                    {"title": "ok", "url": "https://example.com/ok", "date": today},
                 ],
             },
         )

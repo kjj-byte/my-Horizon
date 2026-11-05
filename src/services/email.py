@@ -146,10 +146,13 @@ class EmailManager:
         context = ssl.create_default_context()
         if self.config.smtp_port == 465:
             return smtplib.SMTP_SSL(
-                self.config.smtp_server, self.config.smtp_port, context=context
+                self.config.smtp_server,
+                self.config.smtp_port,
+                context=context,
+                timeout=30,
             )
 
-        server = smtplib.SMTP(self.config.smtp_server, self.config.smtp_port)
+        server = smtplib.SMTP(self.config.smtp_server, self.config.smtp_port, timeout=30)
         try:
             server.ehlo()
             server.starttls(context=context)

@@ -62,10 +62,18 @@ class RSSScraper(BaseScraper):
             async with semaphore:
                 return await self._fetch_feed(source, since)
 
-        results = await asyncio.gather(*(run(source) for source in sources))
+        results = await asyncio.gather(*(run(source) for source in sources), return_exceptions=True)
 
         items: List[ContentItem] = []
-        for feed_items in results:
+        for source, feed_items in zip(sources, results):
+            # One task raising cancels the other feeds, which inherits CancelledError
+            # through gather() — a BaseException that _fetch_feed cannot catch.
+            if isinstance(feed_items, BaseException):
+                self._feed_failures += 1
+                logger.warning(
+                    "Error fetching RSS feed %s: %s", source.name, type(feed_items).__name__
+                )
+                continue
             items.extend(feed_items)
 
         if self._feed_failures == len(sources) and not items:

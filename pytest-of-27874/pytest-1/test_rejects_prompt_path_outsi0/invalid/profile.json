@@ -1,0 +1,1 @@
+{"id": "invalid", "name": "Invalid", "match": "../outside.md", "analysis": "analysis.md", "enrichment": {"prompt": "enrichment.md", "blocks": [{"id": "body", "type": "section", "tools": []}]}}

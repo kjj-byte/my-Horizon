@@ -1,0 +1,1 @@
+{"queries": [{"name": "live", "url": "https://example.com/live", "expires_at": "2026-11-08T13:53:04.917381+00:00"}, {"name": "expired", "url": "https://example.com/expired", "expires_at": "2026-11-04T13:53:04.917381+00:00"}, {"name": "dup", "url": "https://example.com/feed", "expires_at": "2026-11-08T13:53:04.917381+00:00"}]}

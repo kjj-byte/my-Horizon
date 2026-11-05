@@ -50,3 +50,10 @@ def test_valid_group_still_drops_duplicate(monkeypatch):
     out = asyncio.run(_orchestrator().merge_topic_duplicates(items, log=False))
     assert len(out) == 1
     assert out[0].title == "a"
+
+
+def test_item_kept_by_earlier_group_is_not_dropped_later(monkeypatch):
+    _patch_ai(monkeypatch, '{"duplicates": [[2, 0], [1, 0]]}')
+    items = [_item("a"), _item("b"), _item("c")]
+    out = asyncio.run(_orchestrator().merge_topic_duplicates(items, log=False))
+    assert [item.title for item in out] == ["b", "c"]

@@ -1,0 +1,1 @@
+{"ai": {"provider": "openai", "model": "test-model", "api_key_env": "OPENAI_API_KEY", "base_url": "${TEST_BASE_URL}/v1"}, "sources": {}, "collection": {}, "digest": {}}

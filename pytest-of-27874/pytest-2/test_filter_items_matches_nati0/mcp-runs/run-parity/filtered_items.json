@@ -1,0 +1,29 @@
+[
+  {
+    "id": "top",
+    "source_type": "rss",
+    "title": "Item top",
+    "url": "https://example.com/top",
+    "content": "content",
+    "author": "tester",
+    "published_at": "2026-11-05T13:53:48.950084Z",
+    "fetched_at": "2026-11-05T13:53:48.950132Z",
+    "metadata": {},
+    "profile": "tech-news",
+    "processing": {
+      "classification": {
+        "profile": "tech-news",
+        "method": "source_override",
+        "confidence": null,
+        "reason": null
+      },
+      "analysis": {
+        "score": 10.0,
+        "reason": "test",
+        "summary": "top",
+        "tags": []
+      },
+      "artifacts": {}
+    }
+  }
+]

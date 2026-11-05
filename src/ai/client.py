@@ -4,7 +4,7 @@ import os
 import re
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
-from openai import AsyncAzureOpenAI, AsyncOpenAI
+from openai import APIConnectionError, APITimeoutError, AsyncAzureOpenAI, AsyncOpenAI
 from anthropic import AsyncAnthropic
 from google import genai
 from google.genai import types
@@ -622,6 +622,10 @@ class ChainedAIClient(AIClient):
     @staticmethod
     def _should_fallback(exc: Exception) -> bool:
         """Determine if an error warrants fallback to the next provider."""
+        # Timeouts/connection errors carry no status code in their text, so the
+        # message match alone never moved a dead provider to the next one.
+        if isinstance(exc, (APITimeoutError, APIConnectionError, TimeoutError)):
+            return True
         msg = str(exc).lower()
         if "429" in msg or "rate limit" in msg:
             return True

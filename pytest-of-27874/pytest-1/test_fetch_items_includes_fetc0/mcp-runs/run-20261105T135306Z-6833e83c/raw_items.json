@@ -1,0 +1,24 @@
+[
+  {
+    "id": "item-1",
+    "source_type": "rss",
+    "title": "Item item-1",
+    "url": "https://example.com/item-1",
+    "content": "content",
+    "author": "tester",
+    "published_at": "2026-11-05T13:53:06.192249Z",
+    "fetched_at": "2026-11-05T13:53:06.192350Z",
+    "metadata": {},
+    "profile": "tech-news",
+    "processing": {
+      "classification": {
+        "profile": "tech-news",
+        "method": "source_override",
+        "confidence": null,
+        "reason": null
+      },
+      "analysis": null,
+      "artifacts": {}
+    }
+  }
+]

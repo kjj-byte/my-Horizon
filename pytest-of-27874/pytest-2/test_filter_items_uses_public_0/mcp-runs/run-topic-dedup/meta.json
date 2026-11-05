@@ -1,0 +1,13 @@
+{
+  "run_id": "run-topic-dedup",
+  "created_at": "2026-11-05T13:53:48.874656+00:00",
+  "filtered_count": 1,
+  "filter_threshold_override": null,
+  "topic_dedup_enabled": true,
+  "topic_dedup_removed": 1,
+  "reanalysis_filtered_count": 0,
+  "balanced_digest_enabled": false,
+  "balanced_digest_group_counts": {},
+  "balanced_digest_removed": 0,
+  "updated_at": "2026-11-05T13:53:48.892955+00:00"
+}

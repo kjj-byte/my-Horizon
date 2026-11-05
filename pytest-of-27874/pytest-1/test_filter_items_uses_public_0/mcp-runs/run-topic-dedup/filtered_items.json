@@ -1,0 +1,29 @@
+[
+  {
+    "id": "item-1",
+    "source_type": "rss",
+    "title": "Item item-1",
+    "url": "https://example.com/item-1",
+    "content": "content",
+    "author": "tester",
+    "published_at": "2026-11-05T13:53:06.229730Z",
+    "fetched_at": "2026-11-05T13:53:06.229855Z",
+    "metadata": {},
+    "profile": "tech-news",
+    "processing": {
+      "classification": {
+        "profile": "tech-news",
+        "method": "source_override",
+        "confidence": null,
+        "reason": null
+      },
+      "analysis": {
+        "score": 9.0,
+        "reason": "test",
+        "summary": "item-1",
+        "tags": []
+      },
+      "artifacts": {}
+    }
+  }
+]

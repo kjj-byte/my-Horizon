@@ -52,7 +52,7 @@ class WebhookDeliveryResult:
 # Pattern: #{key} or #{key?param1=val1&param2=val2}
 _PLACEHOLDER_RE = re.compile(r"#\{(\w+)(\?\w+=[^}]+)?\}")
 _SENSITIVE_HEADER_RE = re.compile(
-    r"(authorization|token|secret|signature|key|password)", re.IGNORECASE
+    r"(authorization|token|secret|signature|key|password|cookie|session)", re.IGNORECASE
 )
 
 

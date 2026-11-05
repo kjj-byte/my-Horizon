@@ -88,7 +88,7 @@ class ContentAnalyzer:
             coros = [
                 _process(item, i, task) for i, item in enumerate(items)
             ]
-            analyzed_items = await asyncio.gather(*coros)
+            analyzed_items = await asyncio.gather(*coros, return_exceptions=True)
 
         return analyzed_items
 

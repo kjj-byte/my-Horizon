@@ -94,8 +94,10 @@ class WebListScraper(BaseScraper):
         if not url.startswith("http"):
             return None
 
-        published_at = self._parse_date(row.get("date")) or datetime.now(timezone.utc)
-        if published_at < since:
+        # Undated rows used to be stamped "now", so the same listings passed the window
+        # and the repeat filter again every day.
+        published_at = self._parse_date(row.get("date"))
+        if published_at is None or published_at < since:
             return None
 
         digest = hashlib.sha256(url.encode("utf-8")).hexdigest()[:16]

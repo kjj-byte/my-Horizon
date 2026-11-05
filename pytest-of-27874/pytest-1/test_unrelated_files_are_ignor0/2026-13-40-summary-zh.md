@@ -1,0 +1,1 @@
+## [bad](https://example.com/bad)

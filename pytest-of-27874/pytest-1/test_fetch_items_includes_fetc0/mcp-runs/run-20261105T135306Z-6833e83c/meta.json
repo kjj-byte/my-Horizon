@@ -1,0 +1,38 @@
+{
+  "run_id": "run-20261105T135306Z-6833e83c",
+  "created_at": "2026-11-05T13:53:06.188959+00:00",
+  "horizon_path": "D:\\dsh\\ungrouped\\my-Horizon\\pytest-of-27874\\pytest-1\\test_fetch_items_includes_fetc0",
+  "config_path": "D:\\dsh\\ungrouped\\my-Horizon\\pytest-of-27874\\pytest-1\\test_fetch_items_includes_fetc0\\config.json",
+  "hours": 6,
+  "since": "2026-11-05T07:53:06.192216+00:00",
+  "source_selection": [
+    "rss",
+    "github"
+  ],
+  "unknown_sources": [],
+  "raw_count_before_merge": 1,
+  "raw_count": 1,
+  "fetch_status": "partial_failure",
+  "fetch_report": {
+    "status": "partial_failure",
+    "attempted": 2,
+    "successful": 1,
+    "empty": 0,
+    "failed": 1,
+    "item_count": 1,
+    "sources": [
+      {
+        "source": "RSS Feeds",
+        "status": "success",
+        "item_count": 1
+      },
+      {
+        "source": "GitHub",
+        "status": "failure",
+        "item_count": 0,
+        "error": "RuntimeError: down"
+      }
+    ]
+  },
+  "updated_at": "2026-11-05T13:53:06.203004+00:00"
+}

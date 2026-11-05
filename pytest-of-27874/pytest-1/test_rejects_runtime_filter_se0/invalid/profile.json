@@ -1,0 +1,1 @@
+{"id": "invalid", "name": "Invalid", "match": "match.md", "analysis": "analysis.md", "filter": {"enabled": true, "threshold": 7.0}, "enrichment": {"prompt": "enrichment.md", "blocks": [{"id": "body", "type": "section", "tools": []}]}}

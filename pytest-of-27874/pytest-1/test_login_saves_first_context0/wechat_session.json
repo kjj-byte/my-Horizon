@@ -1,0 +1,11 @@
+{
+  "bot_token": "test-token",
+  "base_url": "https://ilinkai.weixin.qq.com",
+  "bot_id": "",
+  "user_id": "u@im.wechat",
+  "context_token": "context",
+  "get_updates_buf": "next",
+  "logged_in_at": "2026-11-05T13:53:15.884903+00:00",
+  "context_updated_at": "2026-11-05T13:53:15.889347+00:00",
+  "context_sends": 0
+}

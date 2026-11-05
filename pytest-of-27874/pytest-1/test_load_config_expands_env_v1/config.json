@@ -1,0 +1,1 @@
+{"ai": {"provider": "openai", "model": "gpt-4o", "api_key_env": "OPENAI_API_KEY", "base_url": "${HORIZON_AI_BASE_URL}"}, "sources": {"hackernews": {"enabled": true}}, "collection": {"time_window_hours": 24}}

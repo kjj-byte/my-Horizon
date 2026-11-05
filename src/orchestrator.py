@@ -97,6 +97,8 @@ def _deduplication_url_key(url: str) -> tuple[str, str, str, str, Optional[int],
     path = parsed.path.rstrip("/") or "/"
     query_parts = []
     for part in parsed.query.split("&") if parsed.query else []:
+        # "" stays, so news.google.com/...?oc=5 keeps its 5. Dropping the shared
+        # parameters below is cross-source work that belongs to another change.
         name = unquote_plus(part.partition("=")[0]).lower()
         if name.startswith("utm_") or name in _TRACKING_QUERY_PARAMETERS:
             continue

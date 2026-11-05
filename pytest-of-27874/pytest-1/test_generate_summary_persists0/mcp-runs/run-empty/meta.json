@@ -1,0 +1,9 @@
+{
+  "run_id": "run-empty",
+  "created_at": "2026-11-05T13:53:06.331197+00:00",
+  "summary_stage": "filtered",
+  "summary_language": "en",
+  "summary_generated_at": "2026-11-05T13:53:06.360393+00:00",
+  "summary_artifact": "D:\\dsh\\ungrouped\\my-Horizon\\pytest-of-27874\\pytest-1\\test_generate_summary_persists0\\mcp-runs\\run-empty\\summary-en.md",
+  "updated_at": "2026-11-05T13:53:06.362990+00:00"
+}

@@ -141,6 +141,7 @@ def test_should_fallback_detects_retryable_errors():
     assert ChainedAIClient._should_fallback(Exception("503 service unavailable")) is True
     assert ChainedAIClient._should_fallback(Exception("Empty response from provider")) is True
     assert ChainedAIClient._should_fallback(Exception("some random error")) is False
+    assert ChainedAIClient._should_fallback(TimeoutError("no status code here")) is True
 
 
 def test_lazy_initialization():
