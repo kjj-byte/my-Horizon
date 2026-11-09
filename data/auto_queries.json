@@ -8,6 +8,33 @@
       "expires_at": "2026-11-16T14:00:53+00:00",
       "category": "cloud-perks",
       "profile": "cloud-perks"
+    },
+    {
+      "term": "限时免费",
+      "name": "自动: 限时免费",
+      "url": "https://news.google.com/rss/search?q=%22%E9%99%90%E6%97%B6%E5%85%8D%E8%B4%B9%22+when%3A7d&hl=zh-CN&gl=CN&ceid=CN%3Azh-Hans",
+      "added_at": "2026-11-09T09:26:02+00:00",
+      "expires_at": "2026-11-23T09:26:02+00:00",
+      "category": "cloud-perks",
+      "profile": "cloud-perks"
+    },
+    {
+      "term": "Flash",
+      "name": "自动: Flash",
+      "url": "https://news.google.com/rss/search?q=%22Flash%22+when%3A7d&hl=zh-CN&gl=CN&ceid=CN%3Azh-Hans",
+      "added_at": "2026-11-09T09:26:02+00:00",
+      "expires_at": "2026-11-23T09:26:02+00:00",
+      "category": "cloud-perks",
+      "profile": "cloud-perks"
+    },
+    {
+      "term": "V4.1",
+      "name": "自动: V4.1",
+      "url": "https://news.google.com/rss/search?q=%22V4.1%22+when%3A7d&hl=zh-CN&gl=CN&ceid=CN%3Azh-Hans",
+      "added_at": "2026-11-09T09:26:02+00:00",
+      "expires_at": "2026-11-23T09:26:02+00:00",
+      "category": "cloud-perks",
+      "profile": "cloud-perks"
     }
   ]
 }
